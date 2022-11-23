@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System.Collections.Generic;
+using System.ServiceModel;
 
 namespace RoutingServerBike
 {
@@ -13,6 +14,8 @@ namespace RoutingServerBike
         string getStations(string contract);
         [OperationContract()]
         string getStation(string station);
-
+        [OperationContract()]
+        string getStationInGivenCityCloseToUs(double latitude, double longitude, string city);
     }
+
 }

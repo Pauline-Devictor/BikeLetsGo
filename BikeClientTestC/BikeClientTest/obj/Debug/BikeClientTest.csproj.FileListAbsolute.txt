@@ -1,0 +1,8 @@
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\bin\Debug\BikeClientTest.exe.config
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\bin\Debug\BikeClientTest.exe
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\bin\Debug\BikeClientTest.pdb
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\obj\Debug\BikeClientTest.csproj.AssemblyReference.cache
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\obj\Debug\BikeClientTest.csproj.SuggestedBindingRedirects.cache
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\obj\Debug\BikeClientTest.csproj.CoreCompileInputs.cache
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\obj\Debug\BikeClientTest.exe
+C:\Users\pdevi\source\repos\BikeClientTest\BikeClientTest\obj\Debug\BikeClientTest.pdb

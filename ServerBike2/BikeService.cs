@@ -8,7 +8,7 @@ using System.Diagnostics.Contracts;
 
 namespace RoutingServerBike
 {
-    class BikeService : IBikeService
+    public class BikeService : IBikeService
     {
         static readonly HttpClient client = new HttpClient();
         public string getContracts()
@@ -25,10 +25,16 @@ namespace RoutingServerBike
         {
             return "ask for a station";
         }
+        public string getStationInGivenCityCloseToUs(double latitude, double longitude, string city)
+        {
+            List<Station> stations = askStationsOfAContract(city).Result;
+            return findClosestStation(latitude,longitude,stations);
+        }
 
         public async Task<string> askContracts()
         {
             HttpResponseMessage response = await client.GetAsync("https://api.jcdecaux.com/vls/v1/contracts?apiKey=07a2f22eaa786639241a704c091d22c6875b5809");
+            response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine(responseBody);
             return responseBody;
