@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="4d4b5e7f-e9fe-4e7a-8b88-c243eda633fc" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="a23ae053-e100-4930-9b1c-ea4b21900408" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,9 +22,9 @@
     <MetadataSource Address="http://localhost:8090/MyService/BikeService?wsdl" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="BikeService.xsd" MetadataType="Schema" ID="4c5f282a-956a-4841-870d-5b7d3be3d8f0" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?xsd=xsd1" />
-    <MetadataFile FileName="BikeService.wsdl" MetadataType="Wsdl" ID="a50ebba5-6750-47de-8660-e2be0e311248" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?wsdl" />
-    <MetadataFile FileName="BikeService1.xsd" MetadataType="Schema" ID="9af9df1b-1ca9-40c5-a8ca-fb4768c3b64a" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?xsd=xsd0" />
+    <MetadataFile FileName="BikeService.xsd" MetadataType="Schema" ID="960a09ce-8c54-4b18-9c40-6151ccd68e20" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?xsd=xsd1" />
+    <MetadataFile FileName="BikeService.wsdl" MetadataType="Wsdl" ID="187d1db7-1c50-4ebb-8c78-c99d5b71dc3e" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?wsdl" />
+    <MetadataFile FileName="BikeService1.xsd" MetadataType="Schema" ID="989f9b89-6aa0-4104-a321-a790b945c2ce" SourceId="1" SourceUrl="http://localhost:8090/MyService/BikeService?xsd=xsd0" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -16,6 +16,9 @@ namespace RoutingServerBike
         string getStation(string station);
         [OperationContract()]
         string getStationInGivenCityCloseToUs(double latitude, double longitude, string city);
+
+        [OperationContract()]
+        string getItinerary(string departure, string arrival);
     }
 
 }

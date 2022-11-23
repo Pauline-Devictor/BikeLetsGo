@@ -23,7 +23,15 @@ namespace BikeClientTest
             Console.WriteLine(stations.ToString());
             Console.WriteLine("Lets try to find closest station to latitude : 0.0 and longitude : 60.0 and in toulouse" );
             Console.WriteLine(bikeServiceClient.getStationInGivenCityCloseToUs(0.0,60.0,"toulouse"));
-            
+
+            Console.WriteLine("Entrez une adresse de départ");
+            string depart =  Console.ReadLine();
+
+            Console.WriteLine("Entrez une adresse d'arrivée");
+            string arrivee = Console.ReadLine();
+
+            Console.WriteLine(bikeServiceClient.getItinerary(depart,arrivee));
+
             Console.ReadLine();
 
         }

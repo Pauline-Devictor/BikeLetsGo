@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using System.Device.Location;
 using System.Text.Json;
 using System.Diagnostics.Contracts;
+using System.Runtime.Remoting.Messaging;
 
 namespace RoutingServerBike
 {
     public class BikeService : IBikeService
     {
+
         static readonly HttpClient client = new HttpClient();
         public string getContracts()
         {
@@ -28,8 +30,36 @@ namespace RoutingServerBike
         public string getStationInGivenCityCloseToUs(double latitude, double longitude, string city)
         {
             List<Station> stations = askStationsOfAContract(city).Result;
-            return findClosestStation(latitude,longitude,stations);
+            return findClosestStation(latitude, longitude, stations);
         }
+
+        public string getItinerary(string departure, string arrival)
+        {
+            string adresses = "Depart de : " + getOSMAdress(departure).display_name + " Arrivée à " + getOSMAdress(arrival).display_name;
+            return adresses;
+        }
+
+
+        public OSMAdress getOSMAdress(string address)
+        {
+            string query, apiKey, url, response;
+            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
+            query = "q=\"" + address.Replace(' ', '+') + "&format=json&limit=1&addressdetails=1";
+            //url = "https://api.jcdecaux.com/vls/v3/contracts";
+            url = "https://nominatim.openstreetmap.org/search.php";
+            response = JCDecauxAPICall(url, query).Result;
+            Console.WriteLine(response);
+
+            List<OSMAdress> adresses = JsonSerializer.Deserialize<List<OSMAdress>>(response);
+            if (adresses != null)
+            {
+               return adresses[0];
+            }
+            else { throw new Exception(); }
+            
+        }
+
+
 
         public async Task<string> askContracts()
         {
@@ -49,7 +79,7 @@ namespace RoutingServerBike
             return stations;
         }
 
-        public string findClosestStation(double latitude, double longitude,List<Station> stations)
+        public string findClosestStation(double latitude, double longitude, List<Station> stations)
         {
             GeoCoordinate clientPosition = new GeoCoordinate(latitude, longitude);
 
@@ -71,26 +101,67 @@ namespace RoutingServerBike
         }
 
 
-        public void testOSM()
+
+
+        static async Task<string> JCDecauxAPICall(string url, string query)
         {
-            
+            //HttpResponseMessage response = await client.GetAsync(url + "?" + query);
+            //Uri uri = new Uri("https://nominatim.openstreetmap.org/search.php?q=111+avenue+des+pugets&format=json&limit=1&addressdetails=1");
+            Uri uri = new Uri(url + "?" + query);
+            HttpResponseMessage response = await client.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
         }
-        
     }
-        public class Station
-        {
-            public string name { get; set; }
-            public int number { get; set; }
-            public Position position { get; set; }
 
-        }
 
-        public class Position
-        {
-            public double latitude { get; set; }
-            public double longitude { get; set; }
-        }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public class Station
+    {
+        public string name { get; set; }
+        public int number { get; set; }
+        public Position position { get; set; }
+
+    }
+
+    public class Position
+    {
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+    }
+
+    public class JCDContract
+    {
+        public string name { get; set; }
+    }
+
+    public class JCDStation
+    {
+        public int number { get; set; }
+        public string name { get; set; }
+        public Position position { get; set; }
+    }
+
+    public class OSMAdress
+    {
+        public string lat { get; set; }
+        public string lon { get; set; }
+        public string display_name { get; set; }
+    }
 
 
 }

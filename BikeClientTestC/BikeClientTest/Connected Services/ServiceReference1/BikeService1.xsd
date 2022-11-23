@@ -56,4 +56,19 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="getItinerary">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="departure" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="arrival" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="getItineraryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="getItineraryResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

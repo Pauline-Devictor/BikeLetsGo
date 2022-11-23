@@ -38,6 +38,12 @@ namespace BikeClientTest.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBikeService/getStationInGivenCityCloseToUs", ReplyAction="http://tempuri.org/IBikeService/getStationInGivenCityCloseToUsResponse")]
         System.Threading.Tasks.Task<string> getStationInGivenCityCloseToUsAsync(double latitude, double longitude, string city);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBikeService/getItinerary", ReplyAction="http://tempuri.org/IBikeService/getItineraryResponse")]
+        string getItinerary(string departure, string arrival);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBikeService/getItinerary", ReplyAction="http://tempuri.org/IBikeService/getItineraryResponse")]
+        System.Threading.Tasks.Task<string> getItineraryAsync(string departure, string arrival);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -97,6 +103,14 @@ namespace BikeClientTest.ServiceReference1 {
         
         public System.Threading.Tasks.Task<string> getStationInGivenCityCloseToUsAsync(double latitude, double longitude, string city) {
             return base.Channel.getStationInGivenCityCloseToUsAsync(latitude, longitude, city);
+        }
+        
+        public string getItinerary(string departure, string arrival) {
+            return base.Channel.getItinerary(departure, arrival);
+        }
+        
+        public System.Threading.Tasks.Task<string> getItineraryAsync(string departure, string arrival) {
+            return base.Channel.getItineraryAsync(departure, arrival);
         }
     }
 }

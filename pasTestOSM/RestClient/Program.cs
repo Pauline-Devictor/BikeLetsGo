@@ -18,7 +18,7 @@ namespace RestClient
 {
     internal class Program
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient();
 
 
 
@@ -27,7 +27,7 @@ namespace RestClient
             using (WebClient webClient = new WebClient()) ;
 
             string query, apiKey, url, response, address;
-            Client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
+            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
             // 0 : Ask the user for his/her API key.
             //Console.WriteLine("Please enter your JCDecaux's API Key");
             //apiKey = Console.ReadLine();
@@ -121,7 +121,7 @@ namespace RestClient
             //HttpResponseMessage response = await client.GetAsync(url + "?" + query);
             //Uri uri = new Uri("https://nominatim.openstreetmap.org/search.php?q=111+avenue+des+pugets&format=json&limit=1&addressdetails=1");
             Uri uri = new Uri(url + "?" + query);
-            HttpResponseMessage response = await Client.GetAsync(uri);
+            HttpResponseMessage response = await client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
@@ -151,35 +151,5 @@ namespace RestClient
         public string display_name { get; set; }
     }
 
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<List<Root>>(myJsonResponse);
-    public class Address
-    {
-        public string suburb { get; set; }
-        public string city_district { get; set; }
-        public string city { get; set; }
-        public string ISO31662lvl6 { get; set; }
-        public string state { get; set; }
-
-        public string ISO31662lvl4 { get; set; }
-        public string region { get; set; }
-        public string country { get; set; }
-        public string country_code { get; set; }
-    }
-
-    public class Root
-    {
-        public int place_id { get; set; }
-        public string licence { get; set; }
-        public string osm_type { get; set; }
-        public int osm_id { get; set; }
-        public List<string> boundingbox { get; set; }
-        public string lat { get; set; }
-        public string lon { get; set; }
-        public string display_name { get; set; }
-        public string @class { get; set; }
-        public string type { get; set; }
-        public double importance { get; set; }
-        public string icon { get; set; }
-        public Address address { get; set; }
-    }
+    
 }
