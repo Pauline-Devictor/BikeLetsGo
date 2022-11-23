@@ -36,17 +36,17 @@ namespace ServerBike2
             //Start the Service
             host.Open();
 
-            //Console.WriteLine("Service is host at " + DateTime.Now.ToString());
+            Console.WriteLine("Service is host at " + DateTime.Now.ToString());
 
             BikeService service = new BikeService();
             //service.getContracts();
 
 
-            Console.WriteLine("Lets try to find a station near latitude : 0.0 and longitude : 60.0");
+           /* Console.WriteLine("Lets try to find a station near latitude : 0.0 and longitude : 60.0");
 
             List<Station> stations = service.askStationsOfAContract("toulouse").Result;
             
-            Console.WriteLine(service.findClosestStation(0.0, 60.0, stations));
+            Console.WriteLine(service.findClosestStation(0.0, 60.0, stations));*/
             Console.WriteLine("Host is running... Press <Enter> key to stop");
             Console.ReadLine();
         }
