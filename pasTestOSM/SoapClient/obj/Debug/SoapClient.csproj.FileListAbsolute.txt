@@ -1,0 +1,16 @@
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\bin\Debug\SoapClient.exe.config
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\bin\Debug\SoapClient.exe
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\bin\Debug\SoapClient.pdb
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.AssemblyReference.cache
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.SuggestedBindingRedirects.cache
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.CoreCompileInputs.cache
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\obj\Debug\SoapClient.exe
+C:\Users\Ben\source\repos\SolutionsLab2\SoapClient\obj\Debug\SoapClient.pdb
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\bin\Debug\SoapClient.exe.config
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\bin\Debug\SoapClient.exe
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\bin\Debug\SoapClient.pdb
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.AssemblyReference.cache
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.SuggestedBindingRedirects.cache
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\obj\Debug\SoapClient.csproj.CoreCompileInputs.cache
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\obj\Debug\SoapClient.exe
+C:\Users\flori\Downloads\SolutionsLab2\SolutionsLab2\SoapClient\obj\Debug\SoapClient.pdb
