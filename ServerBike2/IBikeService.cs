@@ -3,21 +3,21 @@ using System.ServiceModel;
 
 namespace RoutingServerBike
 {
-    [ServiceContract()]
+    [ServiceContract]
     public interface IBikeService
     {
-        [OperationContract()]
+        [OperationContract]
         //Récupère tous les contrats
         string getContracts();
 
-        [OperationContract()]
+        [OperationContract]
         string getStations(string contract);
-        [OperationContract()]
+        [OperationContract]
         string getStation(string station);
-        [OperationContract()]
+        [OperationContract]
         string getStationInGivenCityCloseToUs(double latitude, double longitude, string city);
 
-        [OperationContract()]
+        [OperationContract]
         string getItinerary(string departure, string arrival);
     }
 

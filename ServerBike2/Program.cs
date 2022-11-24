@@ -2,6 +2,7 @@
 using System.ServiceModel.Description;
 using System.ServiceModel;
 using System;
+using static System.Net.WebRequestMethods;
 
 namespace ServerBike2
 {
@@ -17,10 +18,11 @@ namespace ServerBike2
             // Multiple end points can be added to the Service using AddServiceEndpoint() method.
 
             // Example adding :
-            // Uri tcpUrl = new Uri("net.tcp://localhost:8090/MyService/SimpleCalculator");
-            // ServiceHost host = new ServiceHost(typeof(MyCalculatorService.SimpleCalculator), httpUrl, tcpUrl);
+            //
+            //Uri tcpUrl = new Uri("net.tcp://localhost:8090/MyService/SimpleCalculator");
+            // ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl, tcpUrl);
 
-            host.AddServiceEndpoint(typeof(IBikeService), new WSHttpBinding(), "");
+            host.AddServiceEndpoint(typeof(IBikeService), new BasicHttpBinding(), "");
 
             //Enable metadata exchange
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();

@@ -35,7 +35,7 @@ namespace RoutingServerBike
 
         public string getItinerary(string departure, string arrival)
         {
-            string adresses = "Depart de : " + getOSMAdress(departure).display_name + " Arrivée à " + getOSMAdress(arrival).display_name;
+            string adresses = "Depart de : " + getOSMAdress(departure).display_name + " \nArrivée à " + getOSMAdress(arrival).display_name;
             return adresses;
         }
 
