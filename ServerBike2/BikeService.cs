@@ -27,6 +27,8 @@ namespace RoutingServerBike
             {
                 return "Addresses not found, please try again";
             }
+            //on peut optimiser en recherchant un contrat avec le même nom que la ville ou village du départ ou plus proche
+            //Puis en cherchant une ville du même contrat la plus proche de l'arrivée
 
             string closestContractToDeparture = findClosestContract(depart);
             string closestContractToArrival = findClosestContract(arrivee);
@@ -46,7 +48,7 @@ namespace RoutingServerBike
         {
             string query, apiKey, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            query = "q=\"" + address.Replace(' ', '+') + "&format=json&limit=1&addressdetails=1";
+            query = "q=\"" + address.Replace(' ', '+') + "&format=jsonv2&limit=1&addressdetails=1";
             //url = "https://api.jcdecaux.com/vls/v3/contracts";
             url = "https://nominatim.openstreetmap.org/search.php";
             response = JCDecauxAPICall(url, query).Result;
@@ -190,14 +192,20 @@ namespace RoutingServerBike
         public string name { get; set; }
         public Position position { get; set; }
     }
+    public class Address
+    {
+        public string town { get; set; }
+        public string city { get; set; }
+        public string village { get; set; }
+    }
 
     public class OSMAdress
     {
         public string lat { get; set; }
         public string lon { get; set; }
         public string display_name { get; set; }
+        public Address address { get; set; }
     }
-
 
 
 

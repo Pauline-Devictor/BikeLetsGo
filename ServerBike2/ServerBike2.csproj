@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BikeService.cs" />
+    <Compile Include="GenericProxyCacheContract.cs" />
     <Compile Include="IBikeService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
