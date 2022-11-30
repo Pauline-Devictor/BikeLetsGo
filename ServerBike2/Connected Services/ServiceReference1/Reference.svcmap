@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="0ef33eb6-315a-4d98-a034-6b5ce3fa3bc0" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8090/MyService/JCDecauxService" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="JCDecauxService.xsd" MetadataType="Schema" ID="2159e1a6-a884-4d08-a4ca-b3456e6869a3" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd1" />
+    <MetadataFile FileName="JCDecauxService1.xsd" MetadataType="Schema" ID="d1c1a9c2-9265-48a5-bd98-dbaa2aa03341" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd3" />
+    <MetadataFile FileName="JCDecauxService.disco" MetadataType="Disco" ID="7e8bb2be-3dec-4053-8298-5e28603a1ef9" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?disco" />
+    <MetadataFile FileName="JCDecauxService2.xsd" MetadataType="Schema" ID="355ef261-878e-49ad-9bb2-5f5f5f2c3d29" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd2" />
+    <MetadataFile FileName="JCDecauxService.wsdl" MetadataType="Wsdl" ID="da9f8700-3b05-43d3-b911-132f2edaf65b" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?wsdl" />
+    <MetadataFile FileName="JCDecauxService3.xsd" MetadataType="Schema" ID="9a9703ca-23f3-484f-80c5-f8bb0d0f6459" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

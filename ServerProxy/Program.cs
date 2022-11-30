@@ -1,18 +1,17 @@
-﻿using RoutingServerBike;
-using System.ServiceModel.Description;
+﻿using System.ServiceModel.Description;
 using System.ServiceModel;
 using System;
 
-namespace ServerBike2
+namespace ServerProxy
 {
     class Program
     {
         static void Main(string[] args)
         {
             //Doesn't work ? -> Is it launched as Admin ?
-            Uri httpUrl = new Uri("http://localhost:8090/MyService/BikeService");
+            Uri httpUrl = new Uri("http://localhost:8090/MyService/JCDecauxService");
 
-            ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl);
+            ServiceHost host = new ServiceHost(typeof(JCDecauxService), httpUrl);
 
             // Multiple end points can be added to the Service using AddServiceEndpoint() method.
 
@@ -21,7 +20,7 @@ namespace ServerBike2
             //Uri tcpUrl = new Uri("net.tcp://localhost:8090/MyService/SimpleCalculator");
             // ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl, tcpUrl);
 
-            host.AddServiceEndpoint(typeof(IBikeService), new BasicHttpBinding(), "");
+            host.AddServiceEndpoint(typeof(IJCDecauxService), new WSHttpBinding(), "");
 
             //Enable metadata exchange
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
@@ -30,7 +29,7 @@ namespace ServerBike2
 
             host.Open();
 
-            Console.WriteLine("Service is host at " + DateTime.Now.ToString());
+            Console.WriteLine("Proxy Service is host at " + DateTime.Now.ToString());
             Console.WriteLine("Host is running... Press <Enter> key to stop");
             Console.ReadLine();
         }

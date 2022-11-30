@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Device.Location;
 using System.Text.Json;
+using ServerBike2.ServiceReference1;
 
 namespace RoutingServerBike
 {
@@ -11,7 +12,7 @@ namespace RoutingServerBike
     {
 
         static readonly HttpClient client = new HttpClient();
-  
+        private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
         //TODO, permet de donner l'itinéraire au client
         public string getItinerary(string departure, string arrival)
@@ -25,11 +26,12 @@ namespace RoutingServerBike
             }
             catch (Exception ex)
             {
-                return "Addresses not found, please try again";
+                return "Addresses non trouvées, merci de réessayer";
             }
             //on peut optimiser en recherchant un contrat avec le même nom que la ville ou village du départ ou plus proche
+            //On pourra affiner ensuite en gardant une liste des contrats proche du départ puis en regardant dans cette liste les contrats proche de l'arrivée
             //Puis en cherchant une ville du même contrat la plus proche de l'arrivée
-
+  
             string closestContractToDeparture = findClosestContract(depart);
             string closestContractToArrival = findClosestContract(arrivee);
 

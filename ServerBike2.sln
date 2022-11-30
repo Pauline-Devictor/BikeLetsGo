@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerBike2", "ServerBike2\ServerBike2.csproj", "{DBF3FD43-A1EA-488E-93FA-A3EA55A5A224}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerProxy", "ServerProxy\ServerProxy.csproj", "{A195AE01-FB46-4E94-B8EB-B7658254C202}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DBF3FD43-A1EA-488E-93FA-A3EA55A5A224}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBF3FD43-A1EA-488E-93FA-A3EA55A5A224}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBF3FD43-A1EA-488E-93FA-A3EA55A5A224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A195AE01-FB46-4E94-B8EB-B7658254C202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A195AE01-FB46-4E94-B8EB-B7658254C202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A195AE01-FB46-4E94-B8EB-B7658254C202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A195AE01-FB46-4E94-B8EB-B7658254C202}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
