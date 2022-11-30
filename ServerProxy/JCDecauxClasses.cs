@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ServerProxy
 {
@@ -41,10 +37,5 @@ namespace ServerProxy
         public string name { get; set; }
         public Position position { get; set; }
     }
-    public class Address
-    {
-        public string town { get; set; }
-        public string city { get; set; }
-        public string village { get; set; }
-    }
+    
 }

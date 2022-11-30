@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Device.Location;
 using System.Text.Json;
 using ServerBike2.ServiceReference1;
+using System.Linq;
+using System.ServiceModel.PeerResolvers;
 
 namespace RoutingServerBike
 {
@@ -32,16 +34,18 @@ namespace RoutingServerBike
             //On pourra affiner ensuite en gardant une liste des contrats proche du départ puis en regardant dans cette liste les contrats proche de l'arrivée
             //Puis en cherchant une ville du même contrat la plus proche de l'arrivée
   
-            string closestContractToDeparture = findClosestContract(depart);
-            string closestContractToArrival = findClosestContract(arrivee);
 
-            string arret1 = findClosestStation(depart , askStationsOfAContract(closestContractToDeparture).Result);
+            //Chercher pour tous les contrats s'ils contiennent des villes proches de l'arrivée & départ
+            //sinon plus proche du départ
+            string closestContractToDeparture = findClosestContract(depart,arrivee);
+            //string closestContractToArrival = findClosestContract(arrivee);
 
-            string arret2 = findClosestStation(arrivee, askStationsOfAContract(closestContractToArrival).Result);
-
-
+            //Faire une seule boucle de recherche pour opti le temps?
+            string arrets = findClosestStations(depart ,arrivee, askStationsOfAContract(closestContractToDeparture));
+           // string arret2 = findClosestStation(arrivee, askStationsOfAContract(closestContractToDeparture));
+            //string arret2 = findClosestStation(arrivee, askStationsOfAContract(closestContractToArrival));
             
-            string adresses = "Depart de : " + depart.display_name + " \nPrendre vélo à " + arret1 + "\nDeposer vélo à " + arret2 + " \nArrivée à " + arrivee.display_name + " ";
+            string adresses = "Depart de : " + depart.display_name + arrets + " \nArrivée à " + arrivee.display_name + " ";
             return adresses;
         }
 
@@ -58,6 +62,7 @@ namespace RoutingServerBike
             
             if (adresses != null)
             {
+                Console.WriteLine(address);
                return adresses[0];
             }
             else { throw new Exception(); }
@@ -65,44 +70,42 @@ namespace RoutingServerBike
         }
 
 
-        public async Task<List<JCDContract>> askContracts()
+        public Station[] askStationsOfAContract(string contract)
         {
-            HttpResponseMessage response = await client.GetAsync("https://api.jcdecaux.com/vls/v1/contracts?apiKey=07a2f22eaa786639241a704c091d22c6875b5809");
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            List<JCDContract> contracts = JsonSerializer.Deserialize<List<JCDContract>>(responseBody);
-
-            contracts = cleanContractList(contracts);
-            return contracts;
-        }
-
-        public async Task<List<Station>> askStationsOfAContract(string contract)
-        {
-            HttpResponseMessage response = await client.GetAsync("https://api.jcdecaux.com/vls/v1/stations?apiKey=07a2f22eaa786639241a704c091d22c6875b5809&contract=" + contract);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            List<Station> stations = JsonSerializer.Deserialize<List<Station>>(responseBody);
+            Station[] stations = proxy.StationsOfAContract(contract);
             return stations;
         }
 
-        public string findClosestStation(OSMAdress address, List<Station> stations)
+        public string findClosestStations(OSMAdress departurePoint,OSMAdress arrivalPoint, Station[] stations)
         {
-            GeoCoordinate clientPosition = new GeoCoordinate(changeToDouble(address.lat), changeToDouble(address.lon));
+            GeoCoordinate clientPosition = new GeoCoordinate(changeToDouble(departurePoint.lat), changeToDouble(departurePoint.lon));
+            GeoCoordinate arrivalPosition = new GeoCoordinate(changeToDouble(arrivalPoint.lat), changeToDouble(arrivalPoint.lon));
 
-            double savedDistance = -1;
+
+            double savedDistanceDeparture = -1;
+            double savedDistanceArrival = -1;
             Station currentClosestStation = null;
+            Station depositStation = null;
 
             foreach (Station station in stations)
             {
                 GeoCoordinate currentstationGo = new GeoCoordinate(station.position.latitude, station.position.longitude);
-                double distance = clientPosition.GetDistanceTo(currentstationGo);
-                if (distance != 0 && (savedDistance == -1 || distance < savedDistance))
+
+                double departureDistance = clientPosition.GetDistanceTo(currentstationGo);
+                double lastPointDistance = arrivalPosition.GetDistanceTo(currentstationGo);
+                if (departureDistance != 0 && (savedDistanceDeparture == -1 || departureDistance < savedDistanceDeparture))
                 {
-                    savedDistance = distance;
+                    savedDistanceDeparture = departureDistance;
                     currentClosestStation = station;
                 }
+                if(lastPointDistance!=0 && (savedDistanceArrival == -1) || lastPointDistance < savedDistanceArrival)
+                {
+                    savedDistanceArrival = lastPointDistance;
+                    depositStation = station;
+                }
             }
-            return currentClosestStation.name;
+            string message = "\nPrendre le vélo à " + currentClosestStation.name + ". \nDéposer le vélo à " + depositStation.name;
+            return message;
         }
 
         static async Task<string> JCDecauxAPICall(string url, string query)
@@ -118,23 +121,27 @@ namespace RoutingServerBike
 
         
         //Retourne la ville la plus proche des coordonnées données
-        public string findClosestContract(OSMAdress position)
+        public string findClosestContract(OSMAdress depart,OSMAdress arrivee)
         {
-            double positionLat = changeToDouble(position.lat);
-            double positionLon = changeToDouble(position.lon);
-            GeoCoordinate coordIndication = new GeoCoordinate(positionLat, positionLon);
-            List<JCDContract> contracts = askContracts().Result;
+ 
+            GeoCoordinate departGeo = createGeocoordinate(depart);
+            GeoCoordinate arriveeGeo = createGeocoordinate(arrivee);
+
+            JCDContract[] contracts = proxy.getContracts();
+            contracts = cleanContractList(contracts);
    
             double savedDistance = -1;
             String currentClosestContract = null;
-            GeoCoordinate currentPosition = new GeoCoordinate(changeToDouble(position.lat), changeToDouble(position.lon));
+            GeoCoordinate currentPosition = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
 
             foreach (JCDContract contract in contracts)
             {
+
+
                 OSMAdress currentContract = getOSMAdress(contract.name);
 
                 GeoCoordinate currentstationGo = new GeoCoordinate(changeToDouble(currentContract.lat), changeToDouble(currentContract.lon));
-                double distance = coordIndication.GetDistanceTo(currentstationGo);
+                double distance = departGeo.GetDistanceTo(currentstationGo);
                 if (distance != 0 && (savedDistance == -1 || distance < savedDistance))
                 {
                     savedDistance = distance;
@@ -152,48 +159,21 @@ namespace RoutingServerBike
         }
 
 
-        public List<JCDContract> cleanContractList(List<JCDContract> contracts)
+        public JCDContract[] cleanContractList(JCDContract[] contracts)
         {
-            contracts.RemoveAll(x => x.cities == null); // suppression dans la liste des contracts qui ne sont pas des villes 
+            contracts = contracts.Where(x => x.cities != null).ToArray();
+             // suppression dans la liste des contracts qui ne sont pas des villes 
             return contracts;
         }
-    }
 
-
-    public class Station
-    {
-        public string name { get; set; }
-        public int number { get; set; }
-        public Position position { get; set; }
-
-    }
-
-    public class Position
-    {
-        public double latitude { get; set; }
-        public double longitude { get; set; }
-    }
-
-    public class JCDContract
-    {
-        public string name { get; set; }
-        public string commercial_name { get; set; }
-        public List<string> cities { get; set; }
-        public string country_code { get; set; }
-
-        public override string ToString()
+        public GeoCoordinate createGeocoordinate(OSMAdress position)
         {
-            return
-                $"{nameof(name)}: {name}, {nameof(commercial_name)}: {commercial_name}, {nameof(cities)}: {cities}, {nameof(country_code)}: {country_code}";
+            double positionLat = changeToDouble(position.lat);
+            double positionLon = changeToDouble(position.lon);
+            return new GeoCoordinate(positionLat, positionLon);
         }
     }
 
-    public class JCDStation
-    {
-        public int number { get; set; }
-        public string name { get; set; }
-        public Position position { get; set; }
-    }
     public class Address
     {
         public string town { get; set; }
