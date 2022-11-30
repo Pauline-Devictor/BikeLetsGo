@@ -9,6 +9,9 @@ namespace ServerProxy
         public int number { get; set; }
         public Position position { get; set; }
 
+        public string address { get; set; }
+        public string contractName { get; set; }
+
     }
 
     public class Position
@@ -30,12 +33,4 @@ namespace ServerProxy
                 $"{nameof(name)}: {name}, {nameof(commercial_name)}: {commercial_name}, {nameof(cities)}: {cities}";
         }
     }
-
-    public class JCDStation
-    {
-        public int number { get; set; }
-        public string name { get; set; }
-        public Position position { get; set; }
-    }
-    
 }

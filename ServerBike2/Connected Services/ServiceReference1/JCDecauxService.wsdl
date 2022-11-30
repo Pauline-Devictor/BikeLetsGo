@@ -134,7 +134,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IJCDecauxService_StationsOfAContract_Input_policy">
+  <wsp:Policy wsu:Id="WSHttpBinding_IJCDecauxService_closestStationsOfAContract_Input_policy">
     <wsp:ExactlyOne>
       <wsp:All>
         <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
@@ -153,7 +153,7 @@
       </wsp:All>
     </wsp:ExactlyOne>
   </wsp:Policy>
-  <wsp:Policy wsu:Id="WSHttpBinding_IJCDecauxService_StationsOfAContract_output_policy">
+  <wsp:Policy wsu:Id="WSHttpBinding_IJCDecauxService_closestStationsOfAContract_output_policy">
     <wsp:ExactlyOne>
       <wsp:All>
         <sp:SignedParts xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
@@ -178,6 +178,7 @@
       <xsd:import schemaLocation="http://localhost:8090/MyService/JCDecauxService?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://localhost:8090/MyService/JCDecauxService?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/ServerProxy" />
       <xsd:import schemaLocation="http://localhost:8090/MyService/JCDecauxService?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:8090/MyService/JCDecauxService?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/System.Device.Location" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IJCDecauxService_getContracts_InputMessage">
@@ -186,20 +187,20 @@
   <wsdl:message name="IJCDecauxService_getContracts_OutputMessage">
     <wsdl:part name="parameters" element="tns:getContractsResponse" />
   </wsdl:message>
-  <wsdl:message name="IJCDecauxService_StationsOfAContract_InputMessage">
-    <wsdl:part name="parameters" element="tns:StationsOfAContract" />
+  <wsdl:message name="IJCDecauxService_closestStationsOfAContract_InputMessage">
+    <wsdl:part name="parameters" element="tns:closestStationsOfAContract" />
   </wsdl:message>
-  <wsdl:message name="IJCDecauxService_StationsOfAContract_OutputMessage">
-    <wsdl:part name="parameters" element="tns:StationsOfAContractResponse" />
+  <wsdl:message name="IJCDecauxService_closestStationsOfAContract_OutputMessage">
+    <wsdl:part name="parameters" element="tns:closestStationsOfAContractResponse" />
   </wsdl:message>
   <wsdl:portType name="IJCDecauxService">
     <wsdl:operation name="getContracts">
       <wsdl:input wsaw:Action="http://tempuri.org/IJCDecauxService/getContracts" message="tns:IJCDecauxService_getContracts_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IJCDecauxService/getContractsResponse" message="tns:IJCDecauxService_getContracts_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="StationsOfAContract">
-      <wsdl:input wsaw:Action="http://tempuri.org/IJCDecauxService/StationsOfAContract" message="tns:IJCDecauxService_StationsOfAContract_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IJCDecauxService/StationsOfAContractResponse" message="tns:IJCDecauxService_StationsOfAContract_OutputMessage" />
+    <wsdl:operation name="closestStationsOfAContract">
+      <wsdl:input wsaw:Action="http://tempuri.org/IJCDecauxService/closestStationsOfAContract" message="tns:IJCDecauxService_closestStationsOfAContract_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IJCDecauxService/closestStationsOfAContractResponse" message="tns:IJCDecauxService_closestStationsOfAContract_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="WSHttpBinding_IJCDecauxService" type="tns:IJCDecauxService">
@@ -216,14 +217,14 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="StationsOfAContract">
-      <soap12:operation soapAction="http://tempuri.org/IJCDecauxService/StationsOfAContract" style="document" />
+    <wsdl:operation name="closestStationsOfAContract">
+      <soap12:operation soapAction="http://tempuri.org/IJCDecauxService/closestStationsOfAContract" style="document" />
       <wsdl:input>
-        <wsp:PolicyReference URI="#WSHttpBinding_IJCDecauxService_StationsOfAContract_Input_policy" />
+        <wsp:PolicyReference URI="#WSHttpBinding_IJCDecauxService_closestStationsOfAContract_Input_policy" />
         <soap12:body use="literal" />
       </wsdl:input>
       <wsdl:output>
-        <wsp:PolicyReference URI="#WSHttpBinding_IJCDecauxService_StationsOfAContract_output_policy" />
+        <wsp:PolicyReference URI="#WSHttpBinding_IJCDecauxService_closestStationsOfAContract_output_policy" />
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

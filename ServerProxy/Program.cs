@@ -19,8 +19,11 @@ namespace ServerProxy
             //
             //Uri tcpUrl = new Uri("net.tcp://localhost:8090/MyService/SimpleCalculator");
             // ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl, tcpUrl);
+            WSHttpBinding binding = new WSHttpBinding();
 
-            host.AddServiceEndpoint(typeof(IJCDecauxService), new WSHttpBinding(), "");
+            binding.MaxReceivedMessageSize = 1000000;
+            host.AddServiceEndpoint(typeof(IJCDecauxService), binding, "");
+            host.IncrementManualFlowControlLimit(1000000);
 
             //Enable metadata exchange
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();

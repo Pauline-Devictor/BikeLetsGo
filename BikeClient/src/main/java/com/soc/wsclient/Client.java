@@ -42,11 +42,14 @@ public class Client {
 
     static void getDepartureAndArrivalPoint(){
         System.out.println("Entrez une adresse de départ");
-        String depart = "430 route des Colles";
+        //String depart = "place du général de gaulle, rouen";
+        String depart = "rue pelisson villeurbanne";
                     //scanner.nextLine();
 
         System.out.println("Entrez une adresse d'arrivée");
-        String arrivee = "Antibes";
+        //String arrivee = "rue du rem martainville, rouen";
+        //String arrivee = "place de la mairie, lyon";
+        String arrivee = "rue tronchet lyon";
             //scanner.nextLine();
 
         lookForAnItinerary(depart,arrivee);

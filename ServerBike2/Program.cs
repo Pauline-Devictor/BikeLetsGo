@@ -20,8 +20,12 @@ namespace ServerBike2
             //
             //Uri tcpUrl = new Uri("net.tcp://localhost:8090/MyService/SimpleCalculator");
             // ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl, tcpUrl);
+            BasicHttpBinding binding = new BasicHttpBinding();
 
-            host.AddServiceEndpoint(typeof(IBikeService), new BasicHttpBinding(), "");
+            binding.MaxReceivedMessageSize = 1000000;
+            host.AddServiceEndpoint(typeof(IBikeService), binding, "");
+            host.IncrementManualFlowControlLimit(1000000);
+
 
             //Enable metadata exchange
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();

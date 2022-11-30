@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ServiceModel;
+using System.Device.Location;
 
 namespace ServerProxy
 {
@@ -9,7 +10,7 @@ namespace ServerProxy
         [OperationContract]
         List<JCDContract> getContracts();
         [OperationContract]
-        List<Station> StationsOfAContract(string contractName);
+        List<Station> closestStationsOfAContract(string contractName, GeoCoordinate departure, GeoCoordinate arrival);
     }
     
 }

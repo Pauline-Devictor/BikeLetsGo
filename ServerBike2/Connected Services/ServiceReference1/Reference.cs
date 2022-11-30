@@ -116,6 +116,12 @@ namespace ServerBike2.ServiceReference1 {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string addressField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string contractNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string nameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -131,6 +137,32 @@ namespace ServerBike2.ServiceReference1 {
             }
             set {
                 this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string address {
+            get {
+                return this.addressField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.addressField, value) != true)) {
+                    this.addressField = value;
+                    this.RaisePropertyChanged("address");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string contractName {
+            get {
+                return this.contractNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.contractNameField, value) != true)) {
+                    this.contractNameField = value;
+                    this.RaisePropertyChanged("contractName");
+                }
             }
         }
         
@@ -254,11 +286,11 @@ namespace ServerBike2.ServiceReference1 {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IJCDecauxService/getContracts", ReplyAction="http://tempuri.org/IJCDecauxService/getContractsResponse")]
         System.Threading.Tasks.Task<ServerBike2.ServiceReference1.JCDContract[]> getContractsAsync();
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IJCDecauxService/StationsOfAContract", ReplyAction="http://tempuri.org/IJCDecauxService/StationsOfAContractResponse")]
-        ServerBike2.ServiceReference1.Station[] StationsOfAContract(string contractName);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IJCDecauxService/closestStationsOfAContract", ReplyAction="http://tempuri.org/IJCDecauxService/closestStationsOfAContractResponse")]
+        ServerBike2.ServiceReference1.Station[] closestStationsOfAContract(string contractName, System.Device.Location.GeoCoordinate departure, System.Device.Location.GeoCoordinate arrival);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IJCDecauxService/StationsOfAContract", ReplyAction="http://tempuri.org/IJCDecauxService/StationsOfAContractResponse")]
-        System.Threading.Tasks.Task<ServerBike2.ServiceReference1.Station[]> StationsOfAContractAsync(string contractName);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IJCDecauxService/closestStationsOfAContract", ReplyAction="http://tempuri.org/IJCDecauxService/closestStationsOfAContractResponse")]
+        System.Threading.Tasks.Task<ServerBike2.ServiceReference1.Station[]> closestStationsOfAContractAsync(string contractName, System.Device.Location.GeoCoordinate departure, System.Device.Location.GeoCoordinate arrival);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -296,12 +328,12 @@ namespace ServerBike2.ServiceReference1 {
             return base.Channel.getContractsAsync();
         }
         
-        public ServerBike2.ServiceReference1.Station[] StationsOfAContract(string contractName) {
-            return base.Channel.StationsOfAContract(contractName);
+        public ServerBike2.ServiceReference1.Station[] closestStationsOfAContract(string contractName, System.Device.Location.GeoCoordinate departure, System.Device.Location.GeoCoordinate arrival) {
+            return base.Channel.closestStationsOfAContract(contractName, departure, arrival);
         }
         
-        public System.Threading.Tasks.Task<ServerBike2.ServiceReference1.Station[]> StationsOfAContractAsync(string contractName) {
-            return base.Channel.StationsOfAContractAsync(contractName);
+        public System.Threading.Tasks.Task<ServerBike2.ServiceReference1.Station[]> closestStationsOfAContractAsync(string contractName, System.Device.Location.GeoCoordinate departure, System.Device.Location.GeoCoordinate arrival) {
+            return base.Channel.closestStationsOfAContractAsync(contractName, departure, arrival);
         }
     }
 }

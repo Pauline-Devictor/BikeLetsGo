@@ -26,6 +26,7 @@
     <MetadataFile FileName="JCDecauxService1.xsd" MetadataType="Schema" ID="d1c1a9c2-9265-48a5-bd98-dbaa2aa03341" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd3" />
     <MetadataFile FileName="JCDecauxService.disco" MetadataType="Disco" ID="7e8bb2be-3dec-4053-8298-5e28603a1ef9" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?disco" />
     <MetadataFile FileName="JCDecauxService2.xsd" MetadataType="Schema" ID="355ef261-878e-49ad-9bb2-5f5f5f2c3d29" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd2" />
+    <MetadataFile FileName="JCDecauxService4.xsd" MetadataType="Schema" ID="054328e9-808f-4b2b-9146-97dd23e8ba26" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd4" />
     <MetadataFile FileName="JCDecauxService.wsdl" MetadataType="Wsdl" ID="da9f8700-3b05-43d3-b911-132f2edaf65b" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?wsdl" />
     <MetadataFile FileName="JCDecauxService3.xsd" MetadataType="Schema" ID="9a9703ca-23f3-484f-80c5-f8bb0d0f6459" SourceId="1" SourceUrl="http://localhost:8090/MyService/JCDecauxService?xsd=xsd0" />
   </Metadata>

@@ -73,6 +73,9 @@
     <None Include="Connected Services\ServiceReference1\JCDecauxService3.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Connected Services\ServiceReference1\JCDecauxService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Connected Services\ServiceReference1\ServerBike2.ServiceReference1.JCDContract.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
