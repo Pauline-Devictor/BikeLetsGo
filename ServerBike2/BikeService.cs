@@ -16,7 +16,7 @@ namespace RoutingServerBike
         static readonly HttpClient client = new HttpClient();
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
-        //TODO, permet de donner l'itinéraire au client
+
         public string getItinerary(string departure, string arrival)
         {
             OSMAdress depart;
@@ -38,6 +38,7 @@ namespace RoutingServerBike
             //Chercher pour tous les contrats s'ils contiennent des villes proches de l'arrivée & départ
             //sinon plus proche du départ
             string closestContractToDeparture = findClosestContract(depart,arrivee);
+            if(closestContractToDeparture == null) { return "Pas de vélo possible entre ces deux destinations"; }
             //string closestContractToArrival = findClosestContract(arrivee);
 
             //Faire une seule boucle de recherche pour opti le temps?
@@ -62,7 +63,6 @@ namespace RoutingServerBike
             
             if (adresses != null)
             {
-                Console.WriteLine(address);
                return adresses[0];
             }
             else { throw new Exception(); }
@@ -123,7 +123,7 @@ namespace RoutingServerBike
         //Retourne la ville la plus proche des coordonnées données
         public string findClosestContract(OSMAdress depart,OSMAdress arrivee)
         {
- 
+            
             GeoCoordinate departGeo = createGeocoordinate(depart);
             GeoCoordinate arriveeGeo = createGeocoordinate(arrivee);
 
@@ -136,9 +136,10 @@ namespace RoutingServerBike
 
             foreach (JCDContract contract in contracts)
             {
-
-
+                Console.WriteLine(contract.name);
+               if(depart.address.city == contract.name) { 
                 OSMAdress currentContract = getOSMAdress(contract.name);
+
 
                 GeoCoordinate currentstationGo = new GeoCoordinate(changeToDouble(currentContract.lat), changeToDouble(currentContract.lon));
                 double distance = departGeo.GetDistanceTo(currentstationGo);
@@ -146,6 +147,7 @@ namespace RoutingServerBike
                 {
                     savedDistance = distance;
                     currentClosestContract = contract.name;
+                }
                 }
             }
             return currentClosestContract;

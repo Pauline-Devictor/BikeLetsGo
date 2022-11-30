@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>client.bike.service</groupId>
+  <artifactId>BikeClient</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-ri</artifactId>
+      <version>2.3.3</version>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+  </properties>
+
+
+
+
+  <!-- https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-ri -->
+
+<build>
+
+<plugins>
+  <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>jaxws-maven-plugin</artifactId>
+    <version>2.6</version>
+    <executions>
+      <execution>
+        <id>wsimport-from-jdk</id>
+        <goals>
+          <goal>wsimport</goal>
+        </goals>
+      </execution>
+    </executions>
+    <configuration>
+      <wsdlUrls>
+        <wsdlUrl>http://localhost:8090/MyService/BikeService?wsdl</wsdlUrl>
+      </wsdlUrls>
+      <keep>true</keep>
+      <packageName>com.soap.ws.client.generated</packageName>
+      <sourceDestDir>src/main/java</sourceDestDir>
+    </configuration>
+  </plugin>
+</plugins>
+</build>
+
+</project>
