@@ -6,10 +6,6 @@ using System.Device.Location;
 using System.Text.Json;
 using ServerBike2.ServiceReference1;
 using System.Linq;
-using System.ServiceModel.PeerResolvers;
-using System.Diagnostics.Contracts;
-using System.Security.AccessControl;
-using System.Xml.Linq;
 
 namespace RoutingServerBike
 {
@@ -44,11 +40,7 @@ namespace RoutingServerBike
             string closestContract = findClosestContract(depart, arrivee);
             if (closestContract == null) { return "Pas de vélo possible entre ces deux destinations"; }
 
-
             string arrets = findClosestStations(depart, arrivee, closestContract);
-
-
-
             string adresses = "Depart de : " + depart.display_name + "\n" + arrets + " \nArrivée à " + arrivee.display_name + " ";
             return adresses;
         }
@@ -154,8 +146,6 @@ namespace RoutingServerBike
 
         public bool stringCompare(OSMAdress osmAdress, JCDContract contract)
         {
-            Console.WriteLine(contract.name);
-            Console.WriteLine(osmAdress.address.ToString());
             if (osmAdress.address.city != null)
             {
                 if (osmAdress.address.city.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.city))
@@ -194,31 +184,30 @@ namespace RoutingServerBike
         {
             if (adress.address.town != null)
             {
-                adress.address.town = adress.address.town.Replace("ç", "c");
-                adress.address.town = adress.address.town.Replace("é", "e");
-                adress.address.town = adress.address.town.Replace("è", "e");
+                adress.address.town = replaceCharacter(adress.address.town);
             }
             if (adress.address.city != null)
             {
-                adress.address.city = adress.address.city.Replace("ç", "c");
-                adress.address.city = adress.address.city.Replace("é", "e");
-                adress.address.city = adress.address.city.Replace("è", "e");
+                adress.address.city = replaceCharacter(adress.address.city);
             }
             if (adress.address.village != null)
             {
-                adress.address.village = adress.address.village.Replace("ç", "c");
-                adress.address.village = adress.address.village.Replace("é", "e");
-                adress.address.village = adress.address.village.Replace("è", "e");
+                adress.address.village = replaceCharacter(adress.address.village);
             }
             if (adress.address.municipality != null)
             {
-                adress.address.municipality = adress.address.municipality.Replace("ç", "c");
-                adress.address.municipality = adress.address.municipality.Replace("é", "e");
-                adress.address.municipality = adress.address.municipality.Replace("è", "e");
+                adress.address.municipality = replaceCharacter(adress.address.municipality);
             }
             return adress;
         }
 
+        private string replaceCharacter(string input)
+        {
+            input = input.Replace("ç", "c");
+            input = input.Replace("é", "e");
+            input = input.Replace("è", "e");
+            return input;
+        }
     }
 
 
