@@ -21,9 +21,8 @@ namespace ServerProxy
             // ServiceHost host = new ServiceHost(typeof(BikeService), httpUrl, tcpUrl);
             WSHttpBinding binding = new WSHttpBinding();
 
-            binding.MaxReceivedMessageSize = 1000000;
+
             host.AddServiceEndpoint(typeof(IJCDecauxService), binding, "");
-            host.IncrementManualFlowControlLimit(1000000);
 
             //Enable metadata exchange
             ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
