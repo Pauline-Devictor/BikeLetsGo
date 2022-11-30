@@ -130,6 +130,9 @@ namespace ServerBike2.ServiceReference1 {
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private ServerBike2.ServiceReference1.Position positionField;
         
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private ServerBike2.ServiceReference1.TotalStands totalStandsField;
+        
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -205,6 +208,19 @@ namespace ServerBike2.ServiceReference1 {
             }
         }
         
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public ServerBike2.ServiceReference1.TotalStands totalStands {
+            get {
+                return this.totalStandsField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.totalStandsField, value) != true)) {
+                    this.totalStandsField = value;
+                    this.RaisePropertyChanged("totalStands");
+                }
+            }
+        }
+        
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         
         protected void RaisePropertyChanged(string propertyName) {
@@ -262,6 +278,192 @@ namespace ServerBike2.ServiceReference1 {
                 if ((this.longitudeField.Equals(value) != true)) {
                     this.longitudeField = value;
                     this.RaisePropertyChanged("longitude");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="TotalStands", Namespace="http://schemas.datacontract.org/2004/07/ServerProxy")]
+    [System.SerializableAttribute()]
+    public partial class TotalStands : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private ServerBike2.ServiceReference1.Availabilities availabilitiesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int capacityField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public ServerBike2.ServiceReference1.Availabilities availabilities {
+            get {
+                return this.availabilitiesField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.availabilitiesField, value) != true)) {
+                    this.availabilitiesField = value;
+                    this.RaisePropertyChanged("availabilities");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int capacity {
+            get {
+                return this.capacityField;
+            }
+            set {
+                if ((this.capacityField.Equals(value) != true)) {
+                    this.capacityField = value;
+                    this.RaisePropertyChanged("capacity");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="Availabilities", Namespace="http://schemas.datacontract.org/2004/07/ServerProxy")]
+    [System.SerializableAttribute()]
+    public partial class Availabilities : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int bikesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int electricalBikesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int electricalInternalBatteryBikesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int electricalRemovableBatteryBikesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int mechanicalBikesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int standsField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int bikes {
+            get {
+                return this.bikesField;
+            }
+            set {
+                if ((this.bikesField.Equals(value) != true)) {
+                    this.bikesField = value;
+                    this.RaisePropertyChanged("bikes");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int electricalBikes {
+            get {
+                return this.electricalBikesField;
+            }
+            set {
+                if ((this.electricalBikesField.Equals(value) != true)) {
+                    this.electricalBikesField = value;
+                    this.RaisePropertyChanged("electricalBikes");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int electricalInternalBatteryBikes {
+            get {
+                return this.electricalInternalBatteryBikesField;
+            }
+            set {
+                if ((this.electricalInternalBatteryBikesField.Equals(value) != true)) {
+                    this.electricalInternalBatteryBikesField = value;
+                    this.RaisePropertyChanged("electricalInternalBatteryBikes");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int electricalRemovableBatteryBikes {
+            get {
+                return this.electricalRemovableBatteryBikesField;
+            }
+            set {
+                if ((this.electricalRemovableBatteryBikesField.Equals(value) != true)) {
+                    this.electricalRemovableBatteryBikesField = value;
+                    this.RaisePropertyChanged("electricalRemovableBatteryBikes");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int mechanicalBikes {
+            get {
+                return this.mechanicalBikesField;
+            }
+            set {
+                if ((this.mechanicalBikesField.Equals(value) != true)) {
+                    this.mechanicalBikesField = value;
+                    this.RaisePropertyChanged("mechanicalBikes");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int stands {
+            get {
+                return this.standsField;
+            }
+            set {
+                if ((this.standsField.Equals(value) != true)) {
+                    this.standsField = value;
+                    this.RaisePropertyChanged("stands");
                 }
             }
         }

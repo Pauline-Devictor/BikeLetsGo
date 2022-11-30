@@ -29,6 +29,7 @@
       <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="number" type="xs:int" />
       <xs:element minOccurs="0" name="position" nillable="true" type="tns:Position" />
+      <xs:element minOccurs="0" name="totalStands" nillable="true" type="tns:TotalStands" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Station" nillable="true" type="tns:Station" />
@@ -39,4 +40,22 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Position" nillable="true" type="tns:Position" />
+  <xs:complexType name="TotalStands">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="availabilities" nillable="true" type="tns:Availabilities" />
+      <xs:element minOccurs="0" name="capacity" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TotalStands" nillable="true" type="tns:TotalStands" />
+  <xs:complexType name="Availabilities">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="bikes" type="xs:int" />
+      <xs:element minOccurs="0" name="electricalBikes" type="xs:int" />
+      <xs:element minOccurs="0" name="electricalInternalBatteryBikes" type="xs:int" />
+      <xs:element minOccurs="0" name="electricalRemovableBatteryBikes" type="xs:int" />
+      <xs:element minOccurs="0" name="mechanicalBikes" type="xs:int" />
+      <xs:element minOccurs="0" name="stands" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Availabilities" nillable="true" type="tns:Availabilities" />
 </xs:schema>

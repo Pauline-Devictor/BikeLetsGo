@@ -42,14 +42,18 @@ public class Client {
 
     static void getDepartureAndArrivalPoint(){
         System.out.println("Entrez une adresse de départ");
+        String depart = "1 Rue Pierre Scheringa, 95000 Cergy";
+        //String depart = "107 Rue Cheret, 94000 Créteil";
         //String depart = "place du général de gaulle, rouen";
-        String depart = "rue pelisson villeurbanne";
+        //String depart = "rue pelisson villeurbanne";
                     //scanner.nextLine();
 
         System.out.println("Entrez une adresse d'arrivée");
         //String arrivee = "rue du rem martainville, rouen";
         //String arrivee = "place de la mairie, lyon";
-        String arrivee = "rue tronchet lyon";
+        //String arrivee = "rue tronchet lyon";
+       // String arrivee = "14 Rue des Sarrazins, 94000 Créteil";
+        String arrivee = "Boulevard d'Erkrath 22, 95650 Puiseux-Pontoise";
             //scanner.nextLine();
 
         lookForAnItinerary(depart,arrivee);

@@ -44,21 +44,31 @@ namespace ServerProxy
 
                 double departureDistance = clientPosition.GetDistanceTo(currentstationGo);
                 double lastPointDistance = arrivalPosition.GetDistanceTo(currentstationGo);
-                if (departureDistance != 0 && (savedDistanceDeparture == -1 || departureDistance < savedDistanceDeparture))
+                if ((departureDistance != 0 && (savedDistanceDeparture == -1 || departureDistance < savedDistanceDeparture))&&isABikeAvailable(station))
                 {
                     savedDistanceDeparture = departureDistance;
                     currentClosestStation = station;
                 }
-                if (lastPointDistance != 0 && (savedDistanceArrival == -1) || lastPointDistance < savedDistanceArrival)
+                if ((lastPointDistance != 0 && (savedDistanceArrival == -1) || lastPointDistance < savedDistanceArrival)&&isAParkingSlot(station))
                 {
                     savedDistanceArrival = lastPointDistance;
                     depositStation = station;
                 }
             }
-            List < Station > closestStations = new List<Station>();
+            List <Station> closestStations = new List<Station>();
             closestStations.Add(currentClosestStation);
             closestStations.Add(depositStation);
             return closestStations;
+        }
+
+
+        private bool isABikeAvailable(Station station)
+        {
+            return (station.totalStands.availabilities.bikes != 0);
+        }
+        private bool isAParkingSlot(Station station)
+        {
+            return (station.totalStands.availabilities.stands != 0);
         }
     }
 }

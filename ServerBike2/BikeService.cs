@@ -9,6 +9,7 @@ using System.Linq;
 using System.ServiceModel.PeerResolvers;
 using System.Diagnostics.Contracts;
 using System.Security.AccessControl;
+using System.Xml.Linq;
 
 namespace RoutingServerBike
 {
@@ -32,7 +33,7 @@ namespace RoutingServerBike
             {
                 return "Addresses non trouvées, merci de réessayer";
             }
-            
+
             //on peut optimiser en recherchant un contrat avec le même nom que la ville ou village du départ ou plus proche
             //On pourra affiner ensuite en gardant une liste des contrats proche du départ puis en regardant dans cette liste les contrats proche de l'arrivée
             //Puis en cherchant une ville du même contrat la plus proche de l'arrivée
@@ -48,7 +49,7 @@ namespace RoutingServerBike
 
 
 
-            string adresses = "Depart de : " + depart.display_name + arrets + " \nArrivée à " + arrivee.display_name + " ";
+            string adresses = "Depart de : " + depart.display_name + "\n" + arrets + " \nArrivée à " + arrivee.display_name + " ";
             return adresses;
         }
 
@@ -65,23 +66,25 @@ namespace RoutingServerBike
 
             if (adresses != null)
             {
-                return adresses[0];
+                OSMAdress adress = changeFormat(adresses[0]);
+                return adress;
             }
             else { throw new Exception(); }
 
         }
 
 
-        public string findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint,string closestContract )
+        public string findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
         {
             GeoCoordinate departure = createGeocoordinate(departurePoint);
             GeoCoordinate arrival = createGeocoordinate(arrivalPoint);
 
             Station[] stations = proxy.closestStationsOfAContract(closestContract, departure, arrival);
+            Console.WriteLine(stations[0].ToString() + stations[1].ToString());
+            if (stations[0] == null || stations[1] == null) { return "Pas de vélos disponibles pour ce trajet"; }
 
 
-
-            string message = "\nPrendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
+            string message = "Prendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
             return message;
         }
 
@@ -100,8 +103,7 @@ namespace RoutingServerBike
         //Retourne la ville la plus proche des coordonnées données
         public string findClosestContract(OSMAdress depart, OSMAdress arrivee)
         {
-
-            GeoCoordinate departGeo = createGeocoordinate(depart);            
+            GeoCoordinate departGeo = createGeocoordinate(depart);
 
             JCDContract[] contracts = proxy.getContracts();
             contracts = cleanContractList(contracts);
@@ -113,7 +115,7 @@ namespace RoutingServerBike
             foreach (JCDContract contract in contracts)
             {
                 if (stringCompare(depart, contract))
-                {Console.WriteLine(contract.name);
+                {
                     OSMAdress currentContract = getOSMAdress(contract.name);
 
                     GeoCoordinate currentstationGo = new GeoCoordinate(changeToDouble(currentContract.lat), changeToDouble(currentContract.lon));
@@ -152,31 +154,34 @@ namespace RoutingServerBike
 
         public bool stringCompare(OSMAdress osmAdress, JCDContract contract)
         {
+            Console.WriteLine(contract.name);
+            Console.WriteLine(osmAdress.address.ToString());
             if (osmAdress.address.city != null)
             {
-                if (osmAdress.address.city.ToLower().Equals(contract.name) || contract.cities.Contains(osmAdress.address.city))
+                if (osmAdress.address.city.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.city))
                 {
                     return true;
                 }
-                
             }
             if (osmAdress.address.town != null)
             {
-                if (osmAdress.address.town.ToLower().Equals(contract.name) || contract.cities.Contains(osmAdress.address.town))
+                if (osmAdress.address.town.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.town))
                 {
                     return true;
                 }
             }
             if (osmAdress.address.village != null)
             {
-                if (osmAdress.address.village.ToLower().Equals(contract.name) || contract.cities.Contains(osmAdress.address.village))
+                Console.WriteLine(osmAdress.address.village);
+
+                if (osmAdress.address.village.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.village))
                 {
                     return true;
                 }
             }
             if (osmAdress.address.municipality != null)
             {
-                if (osmAdress.address.municipality.ToLower().Equals(contract.name) || contract.cities.Contains(osmAdress.address.municipality))
+                if (osmAdress.address.municipality.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.municipality))
                 {
                     return true;
                 }
@@ -185,29 +190,60 @@ namespace RoutingServerBike
         }
 
 
+        private OSMAdress changeFormat(OSMAdress adress)
+        {
+            if (adress.address.town != null)
+            {
+                adress.address.town = adress.address.town.Replace("ç", "c");
+                adress.address.town = adress.address.town.Replace("é", "e");
+                adress.address.town = adress.address.town.Replace("è", "e");
+            }
+            if (adress.address.city != null)
+            {
+                adress.address.city = adress.address.city.Replace("ç", "c");
+                adress.address.city = adress.address.city.Replace("é", "e");
+                adress.address.city = adress.address.city.Replace("è", "e");
+            }
+            if (adress.address.village != null)
+            {
+                adress.address.village = adress.address.village.Replace("ç", "c");
+                adress.address.village = adress.address.village.Replace("é", "e");
+                adress.address.village = adress.address.village.Replace("è", "e");
+            }
+            if (adress.address.municipality != null)
+            {
+                adress.address.municipality = adress.address.municipality.Replace("ç", "c");
+                adress.address.municipality = adress.address.municipality.Replace("é", "e");
+                adress.address.municipality = adress.address.municipality.Replace("è", "e");
+            }
+            return adress;
+        }
+
+    }
+
+
+    public class Address
+    {
+        public string town { get; set; }
+        public string city { get; set; }
+        public string village { get; set; }
+        public string municipality { get; set; }
+        public override string ToString()
+        {
+            return
+            $"{nameof(town)}: {town}, {nameof(city)}: {city}, {nameof(village)}: {village}, {nameof(municipality)}: {municipality}";
+        }
+    }
+
+    public class OSMAdress
+    {
+        public string lat { get; set; }
+        public string lon { get; set; }
+        public string display_name { get; set; }
+        public Address address { get; set; }
+    }
 
 
 
 }
-
-
-        public class Address
-        {
-            public string town { get; set; }
-            public string city { get; set; }
-            public string village { get; set; }
-            public string municipality { get; set; }
-        }
-
-        public class OSMAdress
-        {
-            public string lat { get; set; }
-            public string lon { get; set; }
-            public string display_name { get; set; }
-            public Address address { get; set; }
-        }
-
-
-
-    }
 
