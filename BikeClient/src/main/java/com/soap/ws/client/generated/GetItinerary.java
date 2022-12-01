@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="departure" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="arrival" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="detailled" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -32,7 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "departure",
-    "arrival"
+    "arrival",
+    "detailled"
 })
 @XmlRootElement(name = "getItinerary")
 public class GetItinerary {
@@ -41,6 +43,7 @@ public class GetItinerary {
     protected JAXBElement<String> departure;
     @XmlElementRef(name = "arrival", namespace = "http://tempuri.org/", type = JAXBElement.class, required = false)
     protected JAXBElement<String> arrival;
+    protected Boolean detailled;
 
     /**
      * Obtient la valeur de la propriété departure.
@@ -88,6 +91,30 @@ public class GetItinerary {
      */
     public void setArrival(JAXBElement<String> value) {
         this.arrival = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété detailled.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isDetailled() {
+        return detailled;
+    }
+
+    /**
+     * Définit la valeur de la propriété detailled.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setDetailled(Boolean value) {
+        this.detailled = value;
     }
 
 }

@@ -10,6 +10,7 @@ using System.Net;
 using ServerBike2;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Microsoft.SqlServer.Server;
 
 namespace RoutingServerBike
 {
@@ -20,70 +21,95 @@ namespace RoutingServerBike
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
 
-        public string getItinerary(string departure, string arrival)
+        public string getItinerary(string departure, string arrival, bool detailled)
         {
-            OSMAdress depart;
-            OSMAdress arrivee;
+            List<OSMAdress> adresses = new List<OSMAdress>();
             try
             {
-                depart = getOSMAdress(departure);
-                arrivee = getOSMAdress(arrival);
-            }
-            catch (Exception ex)
+                adresses = getOSMAdresses(departure, arrival);
+            }catch (Exception e)
             {
                 return "Addresses non trouvées, merci de réessayer";
             }
+            OSMAdress depart = adresses[0];
+            OSMAdress arrivee = adresses[1];
 
-            //on peut optimiser en recherchant un contrat avec le même nom que la ville ou village du départ ou plus proche
-            //On pourra affiner ensuite en gardant une liste des contrats proche du départ puis en regardant dans cette liste les contrats proche de l'arrivée
-            //Puis en cherchant une ville du même contrat la plus proche de l'arrivée
-
-
-            //Chercher pour tous les contrats s'ils contiennent des villes proches de l'arrivée & départ
-            //sinon plus proche du départ
-            string closestContract = findClosestContract(depart, arrivee);
+            string closestContract = findClosestContract(depart);
             if (closestContract == null) { return "Pas de vélo possible entre ces deux destinations"; }
 
-            string arrets = findClosestStations(depart, arrivee, closestContract);
-            string adresses = "Depart de : " + depart.display_name + "\n" + arrets + " \nArrivée à " + arrivee.display_name + " ";
-            return adresses;
+            Station[] stations = findClosestStations(depart, arrivee, closestContract);
+            if(stations == null)
+            {
+                return "Pas de vélos disponibles pour ce trajet";
+            }
+            return prepareMessage(stations, depart, arrivee,detailled);
+           
+        }
+
+        public string getDetailledItinerary(Station[] stations,OSMAdress depart, OSMAdress arrivee ,string itineraryDescription)
+        {
+            string instructions = "";
+            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat),changeToDouble(depart.lon));
+            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat),changeToDouble(arrivee.lon));
+
+            GeoCoordinate arret1 = new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude);
+            GeoCoordinate arret2 = new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude);
+
+            var steps0 = getFootItineraryDetails(departure, arret1);
+            var steps1 = getBikeItineraryDetails(arret1, arret2);
+            var steps2 = getFootItineraryDetails(arret2, arrival);
+            //TODO mettre un cas pour si arret1 == arret2
+            if(steps0==null || steps1==null || steps2==null)
+            { return "Impossible de trouver un trajet détaillé pour ce parcours"; }
+            
+            instructions += "\n" + "Départ de "+ depart.display_name + "\n------------------------------";
+            foreach (Step step in steps0)
+            {
+                instructions += "\n" + step.instruction;
+            }
+            instructions += "\n------------------------------\nArrivée à " + stations[0].name + ", prendre un vélo \n------------------------------";
+            foreach (Step step in steps1)
+            {
+                instructions += "\n" + step.instruction;
+            }
+            instructions += "\n------------------------------\n Arrivée à " + stations[1].name + ", poser le vélo \n------------------------------";
+
+            foreach (Step step in steps2)
+            {
+                instructions += "\n" + step.instruction;
+            }
+            instructions += "\n------------------------------\n Arrivée à destination à " + arrivee.display_name + "\n------------------------------"; 
+            return instructions;
+        
         }
 
 
-        public OSMAdress getOSMAdress(string address)
+            public OSMAdress getOSMAdress(string address)
         {
-            string query, apiKey, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            query = "q=\"" + address.Replace(' ', '+') + "&format=jsonv2&limit=1&addressdetails=1";
-            //url = "https://api.jcdecaux.com/vls/v3/contracts";
-            url = "https://nominatim.openstreetmap.org/search.php";
-            response = callAPI(url, query).Result;
+            string query = "q=\"" + address.Replace(' ', '+') + "&format=jsonv2&limit=1&addressdetails=1";
+            string url = "https://nominatim.openstreetmap.org/search.php";
+            string response = callAPI(url, query).Result;
             List<OSMAdress> adresses = JsonSerializer.Deserialize<List<OSMAdress>>(response);
-
             if (adresses != null)
             {
                 OSMAdress adress = changeFormat(adresses[0]);
                 return adress;
             }
             else { throw new Exception(); }
-            
-
-
         }
 
 
-        public string findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
+        public Station[] findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
         {
             GeoCoordinate departure = createGeocoordinate(departurePoint);
             GeoCoordinate arrival = createGeocoordinate(arrivalPoint);
 
             Station[] stations = proxy.closestStationsOfAContract(closestContract, departure, arrival);
-            Console.WriteLine(stations[0].ToString() + stations[1].ToString());
-            if (stations[0] == null || stations[1] == null) { return "Pas de vélos disponibles pour ce trajet"; }
+            if (stations[0] == null || stations[1] == null) {return null;}
 
+            return stations;
 
-            string message = "Prendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
-            return message;
         }
 
         static async Task<string> callAPI(string url, string query)
@@ -91,18 +117,16 @@ namespace RoutingServerBike
             //HttpResponseMessage response = await client.GetAsync(url + "?" + query);
             //Uri uri = new Uri("https://nominatim.openstreetmap.org/search.php?q=111+avenue+des+pugets&format=json&limit=1&addressdetails=1");
             Uri uri = new Uri(url + "?" + query);
-            Console.WriteLine(uri.ToString());
 
             HttpResponseMessage response = await client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
-            Console.WriteLine(uri.ToString());
             return await response.Content.ReadAsStringAsync();
         }
 
 
 
         //Retourne la ville la plus proche des coordonnées données
-        public string findClosestContract(OSMAdress depart, OSMAdress arrivee)
+        public string findClosestContract(OSMAdress depart)
         {
             GeoCoordinate departGeo = createGeocoordinate(depart);
 
@@ -129,7 +153,6 @@ namespace RoutingServerBike
                 }
             }
             return currentClosestContract;
-
         }
 
         public double changeToDouble(string value)
@@ -153,7 +176,7 @@ namespace RoutingServerBike
             return new GeoCoordinate(positionLat, positionLon);
         }
 
-        public bool stringCompare(OSMAdress osmAdress, JCDContract contract)
+        private bool stringCompare(OSMAdress osmAdress, JCDContract contract)
         {
             if (osmAdress.address.city != null)
             {
@@ -171,8 +194,6 @@ namespace RoutingServerBike
             }
             if (osmAdress.address.village != null)
             {
-                Console.WriteLine(osmAdress.address.village);
-
                 if (osmAdress.address.village.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.village))
                 {
                     return true;
@@ -219,40 +240,71 @@ namespace RoutingServerBike
         }
 
 
-        private List<Step> getBikeItineraryDetails(OSMAdress start, OSMAdress end)
+        private List<Step> getBikeItineraryDetails(GeoCoordinate start, GeoCoordinate end)
         {
             // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
-
             string query, apiKey, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
             apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
-            query = "api_key=" + apiKey + "&start=" + start.lat + "," + start.lon + "&end=" + end.lat + "," + end.lon;
+            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) +  "&end=" + convertCoordToCorrectString(end);
             //velo
             url = "https://api.openrouteservice.org/v2/directions/cycling-regular";
             //url+"?"+query
             //query = api_key=ApiKEY&start=coordDepart&end=coordArrivee
-            response = callAPI(url, query).Result;
-            var steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
+            try { response = callAPI(url, query).Result; }
+            catch(Exception e) { return null; }
+            List<Step> steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
             return steps;
         }
-        public List<Step> getFootItineraryDetails(OSMAdress start, OSMAdress end)
+        public List<Step> getFootItineraryDetails(GeoCoordinate start, GeoCoordinate end)
         {
             // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
 
             string query, apiKey, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            //https://api.openrouteservice.org/v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573&start=8,681495,49,41461&end=8,687872,49,420318
             apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
-            query = "api_key=" + apiKey + "&start=" + start.lat +"," + start.lon + "&end=" + end.lat +"," +end.lon;
+            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
             url = "https://api.openrouteservice.org/v2/directions/foot-walking";
-
-            response = callAPI(url, query).Result;
+            try { response = callAPI(url, query).Result; }
+            catch (Exception e) { return null; }
             var steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
             return steps;
-            /*foreach(Step step in steps)
+        }
+
+        private string convertCoordToCorrectString(GeoCoordinate coord)
+        {
+            string a = Convert.ToString(coord.Longitude);
+            a = a.Replace(",", ".");
+            a += ",";
+            string b = Convert.ToString(coord.Latitude);
+            b = b.Replace(",", ".");
+            a += b;
+            return a;
+        }
+
+        private string prepareMessage(Station[] stations, OSMAdress depart, OSMAdress arrivee, bool detailled)
+        {
+            string message = "Prendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
+
+            string adresses = "Depart de : " + depart.display_name + "\n" + message + " \nArrivée à " + arrivee.display_name + " ";
+            if (detailled)
             {
-                Console.WriteLine(step.instruction);
-            }*/
+                string detailledInstructions = getDetailledItinerary(stations, depart, arrivee, adresses);
+                if (detailledInstructions.Equals("Impossible de trouver un trajet détaillé pour ce parcours"))
+                    return detailledInstructions + "\n" + adresses;
+                return detailledInstructions;
+            }
+            return adresses;
+        }
+
+        private List<OSMAdress> getOSMAdresses(string departure, string arrival)
+        {
+            OSMAdress depart = getOSMAdress(departure);
+            OSMAdress arrive = getOSMAdress(arrival);
+            List<OSMAdress> list = new List<OSMAdress>();
+            list.Add(depart);
+            list.Add(arrive);
+            return list;
         }
     }
 
