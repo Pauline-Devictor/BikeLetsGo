@@ -6,11 +6,7 @@ using System.Device.Location;
 using System.Text.Json;
 using ServerBike2.ServiceReference1;
 using System.Linq;
-using System.Net;
 using ServerBike2;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using Microsoft.SqlServer.Server;
 
 namespace RoutingServerBike
 {
@@ -27,7 +23,8 @@ namespace RoutingServerBike
             try
             {
                 adresses = getOSMAdresses(departure, arrival);
-            }catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return "Addresses non trouvées, merci de réessayer";
             }
@@ -38,19 +35,19 @@ namespace RoutingServerBike
             if (closestContract == null) { return "Pas de vélo possible entre ces deux destinations"; }
 
             Station[] stations = findClosestStations(depart, arrivee, closestContract);
-            if(stations == null)
+            if (stations == null)
             {
                 return "Pas de vélos disponibles pour ce trajet";
             }
-            return prepareMessage(stations, depart, arrivee,detailled);
-           
+            return prepareMessage(stations, depart, arrivee, detailled);
+
         }
 
-        public string getDetailledItinerary(Station[] stations,OSMAdress depart, OSMAdress arrivee ,string itineraryDescription)
+        private string getDetailledItinerary(Station[] stations, OSMAdress depart, OSMAdress arrivee, string itineraryDescription)
         {
             string instructions = "";
-            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat),changeToDouble(depart.lon));
-            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat),changeToDouble(arrivee.lon));
+            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
+            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat), changeToDouble(arrivee.lon));
 
             GeoCoordinate arret1 = new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude);
             GeoCoordinate arret2 = new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude);
@@ -59,10 +56,10 @@ namespace RoutingServerBike
             var steps1 = getBikeItineraryDetails(arret1, arret2);
             var steps2 = getFootItineraryDetails(arret2, arrival);
             //TODO mettre un cas pour si arret1 == arret2
-            if(steps0==null || steps1==null || steps2==null)
+            if (steps0 == null || steps1 == null || steps2 == null)
             { return "Impossible de trouver un trajet détaillé pour ce parcours"; }
-            
-            instructions += "\n" + "Départ de "+ depart.display_name + "\n------------------------------";
+
+            instructions += "\n" + "Départ de " + depart.display_name + "\n------------------------------";
             foreach (Step step in steps0)
             {
                 instructions += "\n" + step.instruction;
@@ -78,13 +75,13 @@ namespace RoutingServerBike
             {
                 instructions += "\n" + step.instruction;
             }
-            instructions += "\n------------------------------\n Arrivée à destination à " + arrivee.display_name + "\n------------------------------"; 
+            instructions += "\n------------------------------\n Arrivée à destination à " + arrivee.display_name + "\n------------------------------";
             return instructions;
-        
+
         }
 
 
-            public OSMAdress getOSMAdress(string address)
+        private OSMAdress getOSMAdress(string address)
         {
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
             string query = "q=\"" + address.Replace(' ', '+') + "&format=jsonv2&limit=1&addressdetails=1";
@@ -100,13 +97,13 @@ namespace RoutingServerBike
         }
 
 
-        public Station[] findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
+        private Station[] findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
         {
             GeoCoordinate departure = createGeocoordinate(departurePoint);
             GeoCoordinate arrival = createGeocoordinate(arrivalPoint);
 
             Station[] stations = proxy.closestStationsOfAContract(closestContract, departure, arrival);
-            if (stations[0] == null || stations[1] == null) {return null;}
+            if (stations[0] == null || stations[1] == null) { return null; }
 
             return stations;
 
@@ -126,6 +123,7 @@ namespace RoutingServerBike
 
 
         //Retourne la ville la plus proche des coordonnées données
+        //TODO Diviser la methode
         public string findClosestContract(OSMAdress depart)
         {
             GeoCoordinate departGeo = createGeocoordinate(depart);
@@ -155,21 +153,21 @@ namespace RoutingServerBike
             return currentClosestContract;
         }
 
-        public double changeToDouble(string value)
+        private double changeToDouble(string value)
         {
             value = value.Replace(".", ",");
             return Convert.ToDouble(value);
         }
 
 
-        public JCDContract[] cleanContractList(JCDContract[] contracts)
+        private JCDContract[] cleanContractList(JCDContract[] contracts)
         {
             contracts = contracts.Where(x => x.cities != null).ToArray();
             // suppression dans la liste des contracts qui ne sont pas des villes 
             return contracts;
         }
 
-        public GeoCoordinate createGeocoordinate(OSMAdress position)
+        private GeoCoordinate createGeocoordinate(OSMAdress position)
         {
             double positionLat = changeToDouble(position.lat);
             double positionLon = changeToDouble(position.lon);
@@ -208,8 +206,6 @@ namespace RoutingServerBike
             }
             return false;
         }
-
-
         private OSMAdress changeFormat(OSMAdress adress)
         {
             if (adress.address.town != null)
@@ -230,7 +226,6 @@ namespace RoutingServerBike
             }
             return adress;
         }
-
         private string replaceCharacter(string input)
         {
             input = input.Replace("ç", "c");
@@ -238,21 +233,17 @@ namespace RoutingServerBike
             input = input.Replace("è", "e");
             return input;
         }
-
-
         private List<Step> getBikeItineraryDetails(GeoCoordinate start, GeoCoordinate end)
         {
             // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
             string query, apiKey, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
             apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
-            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) +  "&end=" + convertCoordToCorrectString(end);
+            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
             //velo
             url = "https://api.openrouteservice.org/v2/directions/cycling-regular";
-            //url+"?"+query
-            //query = api_key=ApiKEY&start=coordDepart&end=coordArrivee
             try { response = callAPI(url, query).Result; }
-            catch(Exception e) { return null; }
+            catch (Exception e) { return null; }
             List<Step> steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
             return steps;
         }
@@ -329,7 +320,6 @@ namespace RoutingServerBike
         public string display_name { get; set; }
         public Address address { get; set; }
     }
-
 
 
 }
