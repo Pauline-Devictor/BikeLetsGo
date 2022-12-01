@@ -34,6 +34,8 @@ namespace ServerBike2
 
             Console.WriteLine("Service is host at " + DateTime.Now.ToString());
             Console.WriteLine("Host is running... Press <Enter> key to stop");
+            BikeService service = new BikeService();
+            service.getFootItineraryDetails();
             Console.ReadLine();
         }
     }

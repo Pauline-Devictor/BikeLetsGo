@@ -6,6 +6,10 @@ using System.Device.Location;
 using System.Text.Json;
 using ServerBike2.ServiceReference1;
 using System.Linq;
+using System.Net;
+using ServerBike2;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace RoutingServerBike
 {
@@ -53,7 +57,7 @@ namespace RoutingServerBike
             query = "q=\"" + address.Replace(' ', '+') + "&format=jsonv2&limit=1&addressdetails=1";
             //url = "https://api.jcdecaux.com/vls/v3/contracts";
             url = "https://nominatim.openstreetmap.org/search.php";
-            response = JCDecauxAPICall(url, query).Result;
+            response = callAPI(url, query).Result;
             List<OSMAdress> adresses = JsonSerializer.Deserialize<List<OSMAdress>>(response);
 
             if (adresses != null)
@@ -62,6 +66,8 @@ namespace RoutingServerBike
                 return adress;
             }
             else { throw new Exception(); }
+            
+
 
         }
 
@@ -80,13 +86,16 @@ namespace RoutingServerBike
             return message;
         }
 
-        static async Task<string> JCDecauxAPICall(string url, string query)
+        static async Task<string> callAPI(string url, string query)
         {
             //HttpResponseMessage response = await client.GetAsync(url + "?" + query);
             //Uri uri = new Uri("https://nominatim.openstreetmap.org/search.php?q=111+avenue+des+pugets&format=json&limit=1&addressdetails=1");
             Uri uri = new Uri(url + "?" + query);
+            Console.WriteLine(uri.ToString());
+
             HttpResponseMessage response = await client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
+            Console.WriteLine(uri.ToString());
             return await response.Content.ReadAsStringAsync();
         }
 
@@ -207,6 +216,43 @@ namespace RoutingServerBike
             input = input.Replace("é", "e");
             input = input.Replace("è", "e");
             return input;
+        }
+
+
+        private List<Step> getBikeItineraryDetails(OSMAdress start, OSMAdress end)
+        {
+            // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
+
+            string query, apiKey, url, response;
+            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
+            apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
+            query = "api_key=" + apiKey + "&start=" + start.lat + "," + start.lon + "&end=" + end.lat + "," + end.lon;
+            //velo
+            url = "https://api.openrouteservice.org/v2/directions/cycling-regular";
+            //url+"?"+query
+            //query = api_key=ApiKEY&start=coordDepart&end=coordArrivee
+            response = callAPI(url, query).Result;
+            var steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
+            return steps;
+        }
+        public List<Step> getFootItineraryDetails(OSMAdress start, OSMAdress end)
+        {
+            // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
+
+            string query, apiKey, url, response;
+            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
+            //https://api.openrouteservice.org/v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573&start=8,681495,49,41461&end=8,687872,49,420318
+            apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
+            query = "api_key=" + apiKey + "&start=" + start.lat +"," + start.lon + "&end=" + end.lat +"," +end.lon;
+            url = "https://api.openrouteservice.org/v2/directions/foot-walking";
+
+            response = callAPI(url, query).Result;
+            var steps = JsonSerializer.Deserialize<Root>(response).features[0].properties.segments[0].steps;
+            return steps;
+            /*foreach(Step step in steps)
+            {
+                Console.WriteLine(step.instruction);
+            }*/
         }
     }
 
