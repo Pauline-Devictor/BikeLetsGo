@@ -7,6 +7,8 @@ using System.Text.Json;
 using ServerBike2.ServiceReference1;
 using System.Linq;
 using ServerBike2;
+using Apache.NMS;
+using Apache.NMS.ActiveMQ;
 
 namespace RoutingServerBike
 {
@@ -278,14 +280,19 @@ namespace RoutingServerBike
             string message = "Prendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
 
             string adresses = "Depart de : " + depart.display_name + "\n" + message + " \nArrivée à " + arrivee.display_name + " ";
+
+            string mapInfos = depart.lat + "," + depart.lon + "/" + Convert.ToString(stations[0].position.latitude).Replace(",", ".") + "," + Convert.ToString(stations[0].position.longitude).Replace(",", ".") + "/" + Convert.ToString(stations[1].position.latitude).Replace(",", ".") + "," + Convert.ToString(stations[1].position.longitude).Replace(",", ".") + "/" + arrivee.lat + "," + arrivee.lon + "test";
             if (detailled)
             {
                 string detailledInstructions = getDetailledItinerary(stations, depart, arrivee, adresses);
                 if (detailledInstructions.Equals("Impossible de trouver un trajet détaillé pour ce parcours"))
-                    return detailledInstructions + "\n" + adresses;
-                return detailledInstructions;
+                    return mapInfos + detailledInstructions + "\n" + adresses;
+                return mapInfos + detailledInstructions;
             }
-            return adresses;
+
+            // Retourne Instructions
+            //return adresses;
+            return mapInfos+adresses;
         }
 
         private List<OSMAdress> getOSMAdresses(string departure, string arrival)
