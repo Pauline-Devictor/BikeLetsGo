@@ -6,7 +6,7 @@ namespace RoutingServerBike
     public interface IBikeService
     {
         [OperationContract]
-        string getItinerary(string departure, string arrival, bool detailled);
+        string getItinerary(string departure, string arrival);
     }
 
 }
