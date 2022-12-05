@@ -72,19 +72,22 @@ public class Client {
         //String arrivee = "14 Rue des Sarrazins, 94000 Créteil";
         //String arrivee = "Boulevard d'Erkrath 22, 95650 Puiseux-Pontoise";
             //scanner.nextLine();
-        lookForAnItinerary(depart,arrivee);
+        System.out.println("Voulez-vous un itinéraire détaillé ? (y/yes ou n/no)");
+        String detailled = scanner.nextLine();
+        boolean detailledBool = detailled.equals("y") || detailled.equals("yes");
+        lookForAnItinerary(depart,arrivee,detailledBool);
     }
 
-    static void lookForAnItinerary(String depart, String arrivee) {
+    static void lookForAnItinerary(String depart, String arrivee, boolean detailledBool) {
 
         System.out.println("Recherche d'itinéraire en cours");
-        String itinerary = iBikeService.getItinerary(depart, arrivee);
+        String itinerary = iBikeService.getItinerary(depart, arrivee,detailledBool);
         String[] itineraries = itinerary.split("stop");
 
         System.out.println(itineraries[1]);
         map(itineraries[0]);
 
-        System.out.println("Voulez-vous essayer un nouvel itinéraire ? (y/yes)");
+        System.out.println("Voulez-vous essayer un nouvel itinéraire ? (Oui : y/yes ; Non : Entrez autre chose)");
         String answer = scanner.nextLine();
         if (answer.equals("y") || answer.equals("yes"))
             getDepartureAndArrivalPoint();

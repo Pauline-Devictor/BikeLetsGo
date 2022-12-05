@@ -23,7 +23,6 @@ namespace ServerProxy
         public List<Station> closestStationsOfAContract(string contractName, GeoCoordinate departure, GeoCoordinate arrival)
         {
             var reqString = Uri + "stations?contract=" + contractName + "&" + KeyUri;
-            Console.WriteLine(reqString);
             List<Station> closeststation = findClosestStation(stationsCache.Get(reqString, 6 * 60), departure, arrival);
             return closeststation; //2e arg permet de garder le cache pdt 6min
         }

@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="IBikeService.cs" />
     <Compile Include="OpenRouteServiceClasses.cs" />
+    <Compile Include="OSMClasses.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

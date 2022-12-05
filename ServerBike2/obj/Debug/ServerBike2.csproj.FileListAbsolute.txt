@@ -60,3 +60,8 @@ D:\Cours\MwSoc\projet\BikeLetsGo\ServerBike2\obj\Debug\ServerBike2.csproj.CoreCo
 D:\Cours\MwSoc\projet\BikeLetsGo\ServerBike2\obj\Debug\ServerBike2.csproj.CopyComplete
 D:\Cours\MwSoc\projet\BikeLetsGo\ServerBike2\obj\Debug\ServerBike2.exe
 D:\Cours\MwSoc\projet\BikeLetsGo\ServerBike2\obj\Debug\ServerBike2.pdb
+C:\Users\pdevi\source\repos\ServerBike2\BikeLetsGo\ServerBike2\bin\Debug\Apache.NMS.ActiveMQ.dll
+C:\Users\pdevi\source\repos\ServerBike2\BikeLetsGo\ServerBike2\bin\Debug\Apache.NMS.dll
+C:\Users\pdevi\source\repos\ServerBike2\BikeLetsGo\ServerBike2\bin\Debug\ICSharpCode.SharpZipLib.dll
+C:\Users\pdevi\source\repos\ServerBike2\BikeLetsGo\ServerBike2\bin\Debug\ICSharpCode.SharpZipLib.pdb
+C:\Users\pdevi\source\repos\ServerBike2\BikeLetsGo\ServerBike2\bin\Debug\ICSharpCode.SharpZipLib.xml

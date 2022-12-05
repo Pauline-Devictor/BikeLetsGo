@@ -41,10 +41,10 @@ namespace ServerProxy
            
             if (cache.ContainsKey(cacheItemName) && cache[cacheItemName].Item1 != null)
             {
-                Console.WriteLine($"Utilisation du cache {cacheItemName}");
+                //Console.WriteLine($"Utilisation du cache {cacheItemName}");
                 return cache[cacheItemName].Item1;
             }
-            Console.WriteLine($"requete vers serveur {cacheItemName}");
+            //Console.WriteLine($"requete vers serveur {cacheItemName}");
             createNewTObject(cacheItemName, dt);
             return cache[cacheItemName].Item1;
         }

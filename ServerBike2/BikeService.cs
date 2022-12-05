@@ -7,11 +7,6 @@ using System.Text.Json;
 using ServerBike2.ServiceReference1;
 using System.Linq;
 using ServerBike2;
-using Apache.NMS;
-using Apache.NMS.ActiveMQ;
-
-
-using Apache.NMS.ActiveMQ.Commands;
 
 namespace RoutingServerBike
 {
@@ -22,7 +17,7 @@ namespace RoutingServerBike
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
 
-        public string getItinerary(string departure, string arrival)
+        public string getItinerary(string departure, string arrival, bool detailled)
         {
             List<OSMAdress> adresses = new List<OSMAdress>();
             try
@@ -44,13 +39,12 @@ namespace RoutingServerBike
             {
                 return "Pas de vélos disponibles pour ce trajet";
             }
-            return prepareMessage(stations, depart, arrivee);
+            return prepareMessage(stations, depart, arrivee, detailled);
 
         }
 
-        private string getDetailledItinerary(Station[] stations, OSMAdress depart, OSMAdress arrivee, string itineraryDescription)
+        private string getDetailledItinerary(Station[] stations, OSMAdress depart, OSMAdress arrivee)
         {
-            string instructions = "";
             GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
             GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat), changeToDouble(arrivee.lon));
 
@@ -68,38 +62,11 @@ namespace RoutingServerBike
             List<Step> steps2 = feature2.properties.segments[0].steps;
             List<List<double>> coordinates2 = feature2.geometry.coordinates;
 
-            String details = "";
-            foreach (List<double> lc in coordinates0)
-            {
-                foreach (double d in lc)
-                {
-                    details += convertDoubleToCorrectString(d) + ",";
-                }
-                details = details.Substring(0, details.Length - 2) + "/";
-            }
-            foreach (List<double> lc in coordinates1)
-            {
-                foreach (double d in lc)
-                {
-                    details += convertDoubleToCorrectString(d) + ",";
-                }
-                details = details.Substring(0, details.Length - 2) + "/";
-            }
-            foreach (List<double> lc in coordinates2)
-            {
-                foreach (double d in lc)
-                {
-                    details += convertDoubleToCorrectString(d) + ",";
-                }
-                details = details.Substring(0, details.Length - 2) + "/";
-            }
-            details = details.Substring(0, details.Length - 2);
 
-            //TODO mettre un cas pour si arret1 == arret2
-            if (steps0 == null || steps1 == null || steps2 == null)
-            { return "Impossible de trouver un trajet détaillé pour ce parcours"; }
 
-            instructions += "\n" + "Départ de " + depart.display_name + "\n------------------------------";
+            string details = getMapDetails(stations, depart,arrivee);
+            string instructions = "";
+            instructions += "------------------------------\n" + "Départ de " + depart.display_name + "\n------------------------------";
             foreach (Step step in steps0)
             {
                 instructions += "\n" + step.instruction;
@@ -117,7 +84,7 @@ namespace RoutingServerBike
                 instructions += "\n" + step.instruction;
             }
             instructions += "\n------------------------------\n Arrivée à destination à " + arrivee.display_name + "\n------------------------------";
-            return details+"stop"+instructions;
+            return details + "stop" + instructions;
 
         }
 
@@ -322,19 +289,88 @@ namespace RoutingServerBike
             return a;
         }
 
-        private string prepareMessage(Station[] stations, OSMAdress depart, OSMAdress arrivee)
+        private string prepareMessage(Station[] stations, OSMAdress depart, OSMAdress arrivee, bool detailled)
         {
             string message = "Prendre le vélo à " + stations[0].address + " - " + stations[0].contractName + ". \nDéposer le vélo à " + stations[1].address + " - " + stations[1].contractName;
 
             string adresses = "Depart de : " + depart.display_name + "\n" + message + " \nArrivée à " + arrivee.display_name + " ";
-
+            string detailledInstructions = "";
             //string mapInfos = "";
             string mapInfos = depart.lat + "," + depart.lon + "/" + convertDoubleToCorrectString(stations[0].position.latitude) + "," + convertDoubleToCorrectString(stations[0].position.longitude) + "/" + convertDoubleToCorrectString(stations[1].position.latitude) + "," + convertDoubleToCorrectString(stations[1].position.longitude) + "/" + arrivee.lat + "," + arrivee.lon + "test";
-            string detailledInstructions = getDetailledItinerary(stations, depart, arrivee, adresses);
-            if (detailledInstructions.Equals("Impossible de trouver un trajet détaillé pour ce parcours"))
-                return mapInfos + detailledInstructions + "\n" + adresses;
+            if (detailled)
+            {
+                detailledInstructions = getDetailledItinerary(stations, depart, arrivee);
+                if (detailledInstructions.Equals("Impossible de trouver un trajet détaillé pour ce parcours"))
+                    return mapInfos + detailledInstructions + "\n" + adresses;
+            }
+            else
+            {
+                detailledInstructions = createNonDetailledMessage(stations,depart,arrivee);
+            }
             return mapInfos + detailledInstructions;
+        }
+
+        private string createNonDetailledMessage(Station[] stations, OSMAdress depart, OSMAdress arrivee)
+        {
+            string details  = getMapDetails(stations, depart, arrivee);
+            string message = "Adresse de départ : " + depart.display_name;
+            message += "\nPrendre un vélo à " + stations[0].name;
+            message += "\nDéposer le vélo à " + stations[1].name;
+            message += "\nSe diriger vers la dernière destination : " + arrivee.display_name;
+            return details +  "stop" + message;
             
+        }
+
+        private string getMapDetails(Station[] stations, OSMAdress depart, OSMAdress arrivee)
+        {
+            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
+            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat), changeToDouble(arrivee.lon));
+
+            GeoCoordinate arret1 = new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude);
+            GeoCoordinate arret2 = new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude);
+
+            Feature feature0 = getFootItineraryDetails(departure, arret1);
+            Feature feature1 = getBikeItineraryDetails(arret1, arret2);
+            Feature feature2 = getFootItineraryDetails(arret2, arrival);
+
+            List<Step> steps0 = feature0.properties.segments[0].steps;
+            List<List<double>> coordinates0 = feature0.geometry.coordinates;
+            List<Step> steps1 = feature1.properties.segments[0].steps;
+            List<List<double>> coordinates1 = feature1.geometry.coordinates;
+            List<Step> steps2 = feature2.properties.segments[0].steps;
+            List<List<double>> coordinates2 = feature2.geometry.coordinates;
+
+            String details = "";
+            foreach (List<double> lc in coordinates0)
+            {
+                foreach (double d in lc)
+                {
+                    details += convertDoubleToCorrectString(d) + ",";
+                }
+                details = details.Substring(0, details.Length - 2) + "/";
+            }
+            foreach (List<double> lc in coordinates1)
+            {
+                foreach (double d in lc)
+                {
+                    details += convertDoubleToCorrectString(d) + ",";
+                }
+                details = details.Substring(0, details.Length - 2) + "/";
+            }
+            foreach (List<double> lc in coordinates2)
+            {
+                foreach (double d in lc)
+                {
+                    details += convertDoubleToCorrectString(d) + ",";
+                }
+                details = details.Substring(0, details.Length - 2) + "/";
+            }
+            details = details.Substring(0, details.Length - 2);
+
+            //TODO mettre un cas pour si arret1 == arret2
+            if (steps0 == null || steps1 == null || steps2 == null)
+            { return "Impossible de trouver un trajet détaillé pour ce parcours"; }
+            return details;
         }
 
         private List<OSMAdress> getOSMAdresses(string departure, string arrival)
@@ -346,28 +382,6 @@ namespace RoutingServerBike
             list.Add(arrive);
             return list;
         }
-    }
-
-
-    public class Address
-    {
-        public string town { get; set; }
-        public string city { get; set; }
-        public string village { get; set; }
-        public string municipality { get; set; }
-        public override string ToString()
-        {
-            return
-            $"{nameof(town)}: {town}, {nameof(city)}: {city}, {nameof(village)}: {village}, {nameof(municipality)}: {municipality}";
-        }
-    }
-
-    public class OSMAdress
-    {
-        public string lat { get; set; }
-        public string lon { get; set; }
-        public string display_name { get; set; }
-        public Address address { get; set; }
     }
 
 

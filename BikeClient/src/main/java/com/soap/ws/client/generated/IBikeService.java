@@ -24,9 +24,12 @@ public interface IBikeService {
 
 
     /**
-     * @param departure
+     * 
      * @param arrival
-     * @return returns java.lang.String
+     * @param departure
+     * @param detailled
+     * @return
+     *     returns java.lang.String
      */
     @WebMethod(action = "http://tempuri.org/IBikeService/getItinerary")
     @WebResult(name = "getItineraryResult", targetNamespace = "http://tempuri.org/")
@@ -36,6 +39,8 @@ public interface IBikeService {
         @WebParam(name = "departure", targetNamespace = "http://tempuri.org/")
         String departure,
         @WebParam(name = "arrival", targetNamespace = "http://tempuri.org/")
-        String arrival);
+        String arrival,
+        @WebParam(name = "detailled", targetNamespace = "http://tempuri.org/")
+        Boolean detailled);
 
 }
