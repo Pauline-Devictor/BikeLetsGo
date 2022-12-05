@@ -16,6 +16,7 @@ import org.jxmapviewer.viewer.*;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
+import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
@@ -27,51 +28,25 @@ public class Client {
     public static void main(String[] args) {
         System.out.println("Hello World! we are going to test a SOAP client written in Java");
         getDepartureAndArrivalPoint();
-        //Donner addresse départ, arrivée
-        /*while (true) {
-            getDepartureAndArrivalPoint();
-            //scanner.nextLine();
-            System.out.println("Recherche d'itinéraire en cours");
-            String itinerary = iBikeService.getItinerary(depart, arrivee);
-            if (itinerary.equals("Addresses not found, please try again")) {
-                System.out.println("Une erreur a eu lieu dans la recherche des adresses.\n Voulez vous réessayer (y/yes ou n/no) ?");
-                answer = scanner.nextLine();
-                if (answer.equals("n") || answer.equals("no")){
-                    return;
-                }
-                else{
-                    continue;
-                }
-            }
-
-            System.out.println(iBikeService.getItinerary(depart, arrivee));
-
-            System.out.println("Voulez vous actualiser l'itinéraire ? (y/yes ou n/no)");
-            answer = scanner.nextLine();
-            if (answer.equals("no") || answer.equals("n")){
-                return;
-            }
-        }*/
     }
 
 
     static void getDepartureAndArrivalPoint(){
         System.out.println("Entrez une adresse de départ");
+        String depart = scanner.nextLine();
         //String depart = "1 Rue Pierre Scheringa, 95000 Cergy";
-        String depart = "107 Rue Cheret, 94000 Créteil";
+        //String depart = "107 Rue Cheret, 94000 Créteil";
         //String depart = "place du général de gaulle, rouen";
-        //String depart = "8 bis chemin des basses brunes";
         //String depart = "rue pelisson villeurbanne";
-                    //scanner.nextLine();
+         //scanner.nextLine();
 
         System.out.println("Entrez une adresse d'arrivée");
         //String arrivee = "rue du rem martainville, rouen";
         //String arrivee = "place de la mairie, lyon";
         //String arrivee = "rue tronchet lyon";
-        String arrivee = "Université Paris XII";
         //String arrivee = "14 Rue des Sarrazins, 94000 Créteil";
         //String arrivee = "Boulevard d'Erkrath 22, 95650 Puiseux-Pontoise";
-            //scanner.nextLine();
+        String arrivee = scanner.nextLine();
         System.out.println("Voulez-vous un itinéraire détaillé ? (y/yes ou n/no)");
         String detailled = scanner.nextLine();
         boolean detailledBool = detailled.equals("y") || detailled.equals("yes");
@@ -123,7 +98,6 @@ public class Client {
         GeoPosition arrivee = new GeoPosition(Double.parseDouble(a.split(",")[0]), Double.parseDouble(a.split(",")[1]));
 
         // Create a track from the geo-positions
-        //List<GeoPosition> track = Arrays.asList(depart, beginBike, endBike, arrivee);
         RoutePainter routePainter = new RoutePainter(listPositions);
 
         // Set the focus
@@ -135,6 +109,7 @@ public class Client {
                 new DefaultWaypoint(beginBike),
                 new DefaultWaypoint(endBike),
                 new DefaultWaypoint(arrivee)));
+
 
         // Set the focus
         mapViewer.setZoom(10);
