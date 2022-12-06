@@ -4,3 +4,9 @@
 *.vsidx
 .vs/ServerBike2/v17/.suo
 *.xml
+*.dll
+*.txt
+*.p7s
+*.nupkg
+*._
+*.cache

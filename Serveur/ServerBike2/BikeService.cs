@@ -16,6 +16,8 @@ namespace RoutingServerBike
         static readonly HttpClient client = new HttpClient();
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
+        static string apiKeyORS = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
+
 
         public string getItinerary(string departure, string arrival, bool detailled)
         {
@@ -35,12 +37,42 @@ namespace RoutingServerBike
             if (closestContract == null) { return "Pas de vélo possible entre ces deux destinations"; }
 
             Station[] stations = findClosestStations(depart, arrivee, closestContract);
+
+            string msg = "";
+            if (!determineOptimizedItinerary(depart, arrivee, stations))
+            {
+                msg = "\n------------------------------\nAttention ! Le point de départ et d'arrivée sont très loin des stations de vélos ! "
+                    + "\nIl vaudrait peut être mieux chercher un autre moyen de transport \n------------------------------";
+            }
+
             if (stations == null)
             {
                 return "Pas de vélos disponibles pour ce trajet";
             }
-            return prepareMessage(stations, depart, arrivee, detailled);
+            return prepareMessage(stations, depart, arrivee, detailled) + msg;
 
+        }
+        //Determine Whether it's too long or not to go to the stations
+        //Return true if it's not too far ; False if distance to the stations == distance(departure,arrival) *2
+        private bool determineOptimizedItinerary(OSMAdress depart, OSMAdress arrivee, Station[] stations)
+        {
+            GeoCoordinate geoDeparture = createGeocoordinate(depart);
+            GeoCoordinate geoArrival = createGeocoordinate(depart);
+            Feature distanceDepartureArrival = getFootItineraryDetails(geoDeparture,geoArrival);
+            Feature distanceDepatureToBike = getFootItineraryDetails(geoDeparture, new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude));
+            Feature distanceArrivalToBike = getFootItineraryDetails(geoArrival, new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude));
+            return !(calculateDistance(distanceDepartureArrival) * 2 < calculateDistance(distanceArrivalToBike) + calculateDistance(distanceDepatureToBike));
+
+        }
+        private double calculateDistance(Feature featureToEvaluate)
+        {
+            double distance = 0;
+            List<Segment> segments = featureToEvaluate.properties.segments;
+            foreach(Segment segment in segments)
+            {
+                distance += segment.distance;
+            }
+            return distance;
         }
 
         private string getDetailledItinerary(Station[] stations, OSMAdress depart, OSMAdress arrivee)
@@ -61,7 +93,6 @@ namespace RoutingServerBike
             List<List<double>> coordinates1 = feature1.geometry.coordinates;
             List<Step> steps2 = feature2.properties.segments[0].steps;
             List<List<double>> coordinates2 = feature2.geometry.coordinates;
-
 
 
             string details = getMapDetails(stations, depart,arrivee);
@@ -131,7 +162,6 @@ namespace RoutingServerBike
 
 
         //Retourne la ville la plus proche des coordonnées données
-        //TODO Diviser la methode
         public string findClosestContract(OSMAdress depart)
         {
             GeoCoordinate departGeo = createGeocoordinate(depart);
@@ -181,6 +211,8 @@ namespace RoutingServerBike
             double positionLon = changeToDouble(position.lon);
             return new GeoCoordinate(positionLat, positionLon);
         }
+
+
 
         private bool stringCompare(OSMAdress osmAdress, JCDContract contract)
         {
@@ -244,10 +276,9 @@ namespace RoutingServerBike
         private Feature getBikeItineraryDetails(GeoCoordinate start, GeoCoordinate end)
         {
             // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
-            string query, apiKey, url, response;
+            string query, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
-            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
+            query = "api_key=" + apiKeyORS + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
             //velo
             url = "https://api.openrouteservice.org/v2/directions/cycling-regular";
             try { response = callAPI(url, query).Result; }
@@ -260,14 +291,14 @@ namespace RoutingServerBike
         {
             // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
 
-            string query, apiKey, url, response;
+            string query, url, response;
             client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            apiKey = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
-            query = "api_key=" + apiKey + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
+            query = "api_key=" + apiKeyORS + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
             url = "https://api.openrouteservice.org/v2/directions/foot-walking";
             try { response = callAPI(url, query).Result; }
             catch (Exception e) { return null; }
             Feature feature = JsonSerializer.Deserialize<Root>(response).features[0];
+            
             return feature;
         }
 
