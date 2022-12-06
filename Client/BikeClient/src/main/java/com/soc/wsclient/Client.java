@@ -57,6 +57,7 @@ public class Client {
         }else{
             System.out.println(itineraries[1]);
             JavaMap.createMap(itineraries[0]);
+
         }
     }
 }

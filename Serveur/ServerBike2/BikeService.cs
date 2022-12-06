@@ -14,9 +14,10 @@ namespace RoutingServerBike
     {
 
         static readonly HttpClient client = new HttpClient();
+        OpenRouteServiceHelper orsHelper = new OpenRouteServiceHelper(client);
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
-        static string apiKeyORS = "5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573";
+        private readonly ActiveMQService activeMQ = new ActiveMQService();
 
 
         public string getItinerary(string departure, string arrival, bool detailled)
@@ -56,36 +57,26 @@ namespace RoutingServerBike
         //Return true if it's not too far ; False if distance to the stations == distance(departure,arrival) *2
         private bool determineOptimizedItinerary(OSMAdress depart, OSMAdress arrivee, Station[] stations)
         {
-            GeoCoordinate geoDeparture = createGeocoordinate(depart);
-            GeoCoordinate geoArrival = createGeocoordinate(depart);
-            Feature distanceDepartureArrival = getFootItineraryDetails(geoDeparture,geoArrival);
-            Feature distanceDepatureToBike = getFootItineraryDetails(geoDeparture, new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude));
-            Feature distanceArrivalToBike = getFootItineraryDetails(geoArrival, new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude));
-            return !(calculateDistance(distanceDepartureArrival) * 2 < calculateDistance(distanceArrivalToBike) + calculateDistance(distanceDepatureToBike));
-
+            GeoCoordinate geoDeparture = CoordHelper.createGeocoordinate(depart);
+            GeoCoordinate geoArrival = CoordHelper.createGeocoordinate(depart);
+            Feature distanceDepartureArrival = orsHelper.getFootItineraryDetails(geoDeparture,geoArrival);
+            Feature distanceDepatureToBike = orsHelper.getFootItineraryDetails(geoDeparture, new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude));
+            Feature distanceArrivalToBike = orsHelper.getFootItineraryDetails(geoArrival, new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude));
+            return !(CoordHelper.calculateDistance(distanceDepartureArrival) * 2 < CoordHelper.calculateDistance(distanceArrivalToBike) + CoordHelper.calculateDistance(distanceDepatureToBike));
         }
-        private double calculateDistance(Feature featureToEvaluate)
-        {
-            double distance = 0;
-            List<Segment> segments = featureToEvaluate.properties.segments;
-            foreach(Segment segment in segments)
-            {
-                distance += segment.distance;
-            }
-            return distance;
-        }
+      
 
         private string getDetailledItinerary(Station[] stations, OSMAdress depart, OSMAdress arrivee)
         {
-            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
-            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat), changeToDouble(arrivee.lon));
+            GeoCoordinate departure = new GeoCoordinate(CoordHelper.changeToDouble(depart.lat), CoordHelper.changeToDouble(depart.lon));
+            GeoCoordinate arrival = new GeoCoordinate(CoordHelper.changeToDouble(arrivee.lat), CoordHelper.changeToDouble(arrivee.lon));
 
             GeoCoordinate arret1 = new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude);
             GeoCoordinate arret2 = new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude);
 
-            Feature feature0 = getFootItineraryDetails(departure, arret1);
-            Feature feature1 = getBikeItineraryDetails(arret1, arret2);
-            Feature feature2 = getFootItineraryDetails(arret2, arrival);
+            Feature feature0 = orsHelper.getFootItineraryDetails(departure, arret1);
+            Feature feature1 = orsHelper.getBikeItineraryDetails(arret1, arret2);
+            Feature feature2 = orsHelper.getFootItineraryDetails(arret2, arrival);
 
             List<Step> steps0 = feature0.properties.segments[0].steps;
             List<List<double>> coordinates0 = feature0.geometry.coordinates;
@@ -129,7 +120,7 @@ namespace RoutingServerBike
             List<OSMAdress> adresses = JsonSerializer.Deserialize<List<OSMAdress>>(response);
             if (adresses != null)
             {
-                OSMAdress adress = changeFormat(adresses[0]);
+                OSMAdress adress = StringHelper.changeFormat(adresses[0]);
                 return adress;
             }
             else { throw new Exception(); }
@@ -138,8 +129,8 @@ namespace RoutingServerBike
 
         private Station[] findClosestStations(OSMAdress departurePoint, OSMAdress arrivalPoint, string closestContract)
         {
-            GeoCoordinate departure = createGeocoordinate(departurePoint);
-            GeoCoordinate arrival = createGeocoordinate(arrivalPoint);
+            GeoCoordinate departure = CoordHelper.createGeocoordinate(departurePoint);
+            GeoCoordinate arrival = CoordHelper.createGeocoordinate(arrivalPoint);
 
             Station[] stations = proxy.closestStationsOfAContract(closestContract, departure, arrival);
             if (stations[0] == null || stations[1] == null) { return null; }
@@ -164,22 +155,22 @@ namespace RoutingServerBike
         //Retourne la ville la plus proche des coordonnées données
         public string findClosestContract(OSMAdress depart)
         {
-            GeoCoordinate departGeo = createGeocoordinate(depart);
+            GeoCoordinate departGeo = CoordHelper.createGeocoordinate(depart);
 
             JCDContract[] contracts = proxy.getContracts();
             contracts = cleanContractList(contracts);
 
             double savedDistance = -1;
             String currentClosestContract = null;
-            GeoCoordinate currentPosition = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
+            GeoCoordinate currentPosition = new GeoCoordinate(CoordHelper.changeToDouble(depart.lat), CoordHelper.changeToDouble(depart.lon));
 
             foreach (JCDContract contract in contracts)
             {
-                if (stringCompare(depart, contract))
+                if (StringHelper.stringCompare(depart, contract))
                 {
                     OSMAdress currentContract = getOSMAdress(contract.name);
 
-                    GeoCoordinate currentstationGo = new GeoCoordinate(changeToDouble(currentContract.lat), changeToDouble(currentContract.lon));
+                    GeoCoordinate currentstationGo = new GeoCoordinate(CoordHelper.changeToDouble(currentContract.lat), CoordHelper.changeToDouble(currentContract.lon));
                     double distance = departGeo.GetDistanceTo(currentstationGo);
                     if (distance != 0 && (savedDistance == -1 || distance < savedDistance))
                     {
@@ -191,11 +182,7 @@ namespace RoutingServerBike
             return currentClosestContract;
         }
 
-        private double changeToDouble(string value)
-        {
-            value = value.Replace(".", ",");
-            return Convert.ToDouble(value);
-        }
+       
 
 
         private JCDContract[] cleanContractList(JCDContract[] contracts)
@@ -205,120 +192,8 @@ namespace RoutingServerBike
             return contracts;
         }
 
-        private GeoCoordinate createGeocoordinate(OSMAdress position)
-        {
-            double positionLat = changeToDouble(position.lat);
-            double positionLon = changeToDouble(position.lon);
-            return new GeoCoordinate(positionLat, positionLon);
-        }
-
-
-
-        private bool stringCompare(OSMAdress osmAdress, JCDContract contract)
-        {
-            if (osmAdress.address.city != null)
-            {
-                if (osmAdress.address.city.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.city))
-                {
-                    return true;
-                }
-            }
-            if (osmAdress.address.town != null)
-            {
-                if (osmAdress.address.town.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.town))
-                {
-                    return true;
-                }
-            }
-            if (osmAdress.address.village != null)
-            {
-                if (osmAdress.address.village.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.village))
-                {
-                    return true;
-                }
-            }
-            if (osmAdress.address.municipality != null)
-            {
-                if (osmAdress.address.municipality.ToLower().Trim().Equals(contract.name) || contract.cities.Contains(osmAdress.address.municipality))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        private OSMAdress changeFormat(OSMAdress adress)
-        {
-            if (adress.address.town != null)
-            {
-                adress.address.town = replaceCharacter(adress.address.town);
-            }
-            if (adress.address.city != null)
-            {
-                adress.address.city = replaceCharacter(adress.address.city);
-            }
-            if (adress.address.village != null)
-            {
-                adress.address.village = replaceCharacter(adress.address.village);
-            }
-            if (adress.address.municipality != null)
-            {
-                adress.address.municipality = replaceCharacter(adress.address.municipality);
-            }
-            return adress;
-        }
-        private string replaceCharacter(string input)
-        {
-            input = input.Replace("ç", "c");
-            input = input.Replace("é", "e");
-            input = input.Replace("è", "e");
-            return input;
-        }
-        private Feature getBikeItineraryDetails(GeoCoordinate start, GeoCoordinate end)
-        {
-            // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
-            string query, url, response;
-            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            query = "api_key=" + apiKeyORS + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
-            //velo
-            url = "https://api.openrouteservice.org/v2/directions/cycling-regular";
-            try { response = callAPI(url, query).Result; }
-            catch (Exception e) { return null; }
-            Feature feature = JsonSerializer.Deserialize<Root>(response).features[0];
-            //Console.WriteLine(details);
-            return feature;
-        }
-        public Feature getFootItineraryDetails(GeoCoordinate start, GeoCoordinate end)
-        {
-            // key ORS = 5b3ce3597851110001cf62482cb55505d51f40be9833ab07a19a9573
-
-            string query, url, response;
-            client.DefaultRequestHeaders.Add("User-Agent", "RoutingServer");
-            query = "api_key=" + apiKeyORS + "&start=" + convertCoordToCorrectString(start) + "&end=" + convertCoordToCorrectString(end);
-            url = "https://api.openrouteservice.org/v2/directions/foot-walking";
-            try { response = callAPI(url, query).Result; }
-            catch (Exception e) { return null; }
-            Feature feature = JsonSerializer.Deserialize<Root>(response).features[0];
-            
-            return feature;
-        }
-
-        private string convertCoordToCorrectString(GeoCoordinate coord)
-        {
-            string a = Convert.ToString(coord.Longitude);
-            a = a.Replace(",", ".");
-            a += ",";
-            string b = Convert.ToString(coord.Latitude);
-            b = b.Replace(",", ".");
-            a += b;
-            return a;
-        }
-
-        private string convertDoubleToCorrectString(double d)
-        {
-            string a = Convert.ToString(d);
-            a = a.Replace(",", ".");
-            return a;
-        }
+       
+     
 
         private string prepareMessage(Station[] stations, OSMAdress depart, OSMAdress arrivee, bool detailled)
         {
@@ -327,7 +202,11 @@ namespace RoutingServerBike
             string adresses = "Depart de : " + depart.display_name + "\n" + message + " \nArrivée à " + arrivee.display_name + " ";
             string detailledInstructions = "";
             //string mapInfos = "";
-            string mapInfos = depart.lat + "," + depart.lon + "/" + convertDoubleToCorrectString(stations[0].position.latitude) + "," + convertDoubleToCorrectString(stations[0].position.longitude) + "/" + convertDoubleToCorrectString(stations[1].position.latitude) + "," + convertDoubleToCorrectString(stations[1].position.longitude) + "/" + arrivee.lat + "," + arrivee.lon + "test";
+            string mapInfos = depart.lat 
+                + "," + depart.lon + "/" + CoordHelper.convertDoubleToCorrectString(stations[0].position.latitude) 
+                + "," + CoordHelper.convertDoubleToCorrectString(stations[0].position.longitude) + "/" + CoordHelper.convertDoubleToCorrectString(stations[1].position.latitude) 
+                + "," + CoordHelper.convertDoubleToCorrectString(stations[1].position.longitude) + "/" + arrivee.lat 
+                + "," + arrivee.lon + "test";
             if (detailled)
             {
                 detailledInstructions = getDetailledItinerary(stations, depart, arrivee);
@@ -354,15 +233,15 @@ namespace RoutingServerBike
 
         private string getMapDetails(Station[] stations, OSMAdress depart, OSMAdress arrivee)
         {
-            GeoCoordinate departure = new GeoCoordinate(changeToDouble(depart.lat), changeToDouble(depart.lon));
-            GeoCoordinate arrival = new GeoCoordinate(changeToDouble(arrivee.lat), changeToDouble(arrivee.lon));
+            GeoCoordinate departure = new GeoCoordinate(CoordHelper.changeToDouble(depart.lat), CoordHelper.changeToDouble(depart.lon));
+            GeoCoordinate arrival = new GeoCoordinate(CoordHelper.changeToDouble(arrivee.lat), CoordHelper.changeToDouble(arrivee.lon));
 
             GeoCoordinate arret1 = new GeoCoordinate(stations[0].position.latitude, stations[0].position.longitude);
             GeoCoordinate arret2 = new GeoCoordinate(stations[1].position.latitude, stations[1].position.longitude);
 
-            Feature feature0 = getFootItineraryDetails(departure, arret1);
-            Feature feature1 = getBikeItineraryDetails(arret1, arret2);
-            Feature feature2 = getFootItineraryDetails(arret2, arrival);
+            Feature feature0 = orsHelper.getFootItineraryDetails(departure, arret1);
+            Feature feature1 = orsHelper.getBikeItineraryDetails(arret1, arret2);
+            Feature feature2 = orsHelper.getFootItineraryDetails(arret2, arrival);
 
             List<Step> steps0 = feature0.properties.segments[0].steps;
             List<List<double>> coordinates0 = feature0.geometry.coordinates;
@@ -376,7 +255,7 @@ namespace RoutingServerBike
             {
                 foreach (double d in lc)
                 {
-                    details += convertDoubleToCorrectString(d) + ",";
+                    details += CoordHelper.convertDoubleToCorrectString(d) + ",";
                 }
                 details = details.Substring(0, details.Length - 2) + "/";
             }
@@ -384,7 +263,7 @@ namespace RoutingServerBike
             {
                 foreach (double d in lc)
                 {
-                    details += convertDoubleToCorrectString(d) + ",";
+                    details += CoordHelper.convertDoubleToCorrectString(d) + ",";
                 }
                 details = details.Substring(0, details.Length - 2) + "/";
             }
@@ -392,7 +271,7 @@ namespace RoutingServerBike
             {
                 foreach (double d in lc)
                 {
-                    details += convertDoubleToCorrectString(d) + ",";
+                    details += CoordHelper.convertDoubleToCorrectString(d) + ",";
                 }
                 details = details.Substring(0, details.Length - 2) + "/";
             }
@@ -414,7 +293,5 @@ namespace RoutingServerBike
             return list;
         }
     }
-
-
 }
 
