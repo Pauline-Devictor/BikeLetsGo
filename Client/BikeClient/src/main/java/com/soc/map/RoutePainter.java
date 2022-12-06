@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class RoutePainter implements Painter<JXMapViewer>
 {
-    private Color color = Color.RED;
+    private final Color color = Color.RED;
     private boolean antiAlias = true;
 
-    private List<GeoPosition> track;
+    private final List<GeoPosition> track;
 
     /**
      * @param track the track
@@ -28,7 +28,7 @@ public class RoutePainter implements Painter<JXMapViewer>
     {
         // copy the list so that changes in the 
         // original list do not have an effect here
-        this.track = new ArrayList<GeoPosition>(track);
+        this.track = new ArrayList<>(track);
     }
 
     @Override
