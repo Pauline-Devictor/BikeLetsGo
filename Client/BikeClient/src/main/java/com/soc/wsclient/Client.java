@@ -19,20 +19,13 @@ public class Client {
     static void getDepartureAndArrivalPoint(){
         System.out.println("Entrez une adresse de départ");
         String depart = scanner.nextLine();
-        //String depart = "1 Rue Pierre Scheringa, 95000 Cergy";
-        //String depart = "107 Rue Cheret, 94000 Créteil";
-        //String depart = "place du général de gaulle, rouen";
-        //String depart = "rue pelisson villeurbanne";
 
         System.out.println("Entrez une adresse d'arrivée");
-        //String arrivee = "rue du rem martainville, rouen";
-        //String arrivee = "place de la mairie, lyon";
-        //String arrivee = "rue tronchet lyon";
-        //String arrivee = "14 Rue des Sarrazins, 94000 Créteil";
-        //String arrivee = "Boulevard d'Erkrath 22, 95650 Puiseux-Pontoise";
         String arrivee = scanner.nextLine();
+
         System.out.println("Voulez-vous un itinéraire détaillé ? (Oui : y/yes ; Non : Entrez autre chose)");
         String detailled = scanner.nextLine();
+
         boolean detailledBool = detailled.equals("y") || detailled.equals("yes");
         lookForAnItinerary(depart,arrivee,detailledBool);
     }
@@ -57,7 +50,6 @@ public class Client {
         }else{
             System.out.println(itineraries[1]);
             JavaMap.createMap(itineraries[0]);
-
         }
     }
 }

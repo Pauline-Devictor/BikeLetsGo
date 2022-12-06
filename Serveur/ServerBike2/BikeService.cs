@@ -14,10 +14,9 @@ namespace RoutingServerBike
     {
 
         static readonly HttpClient client = new HttpClient();
-        OpenRouteServiceHelper orsHelper = new OpenRouteServiceHelper(client);
+        private OpenRouteServiceHelper orsHelper = new OpenRouteServiceHelper(client);
         private JCDecauxServiceClient proxy = new JCDecauxServiceClient();
 
-        private readonly ActiveMQService activeMQ = new ActiveMQService();
 
 
         public string getItinerary(string departure, string arrival, bool detailled)
