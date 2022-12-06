@@ -39,10 +39,10 @@ namespace RoutingServerBike
             Station[] stations = findClosestStations(depart, arrivee, closestContract);
 
             string msg = "";
-            if (!determineOptimizedItinerary(depart, arrivee, stations))
+            if (determineOptimizedItinerary(depart, arrivee, stations))
             {
-                msg = "\n------------------------------\nAttention ! Le point de départ et d'arrivée sont très loin des stations de vélos ! "
-                    + "\nIl vaudrait peut être mieux chercher un autre moyen de transport \n------------------------------";
+                msg = "\n------------------------------\nAttention ! Il serait plus intéressant de faire le trajet à pied, car le trajet pour se rendre aux stations de vélos est le double de votre itinéraire originel ! "
+                    + "\nIl vaudrait peut être mieux chercher le trajet à pied ou de trouver un autre moyen de transport \n------------------------------";
             }
 
             if (stations == null)
